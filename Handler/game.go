@@ -137,7 +137,7 @@ func Init(ws *websocket.Conn, room Room) string {
 func RoomUser(room Room) {
 	str := "{'status':'room','mes':'房间成员信息','data':["
 	for l, item := range room.User {
-		if l == len(room.User)-1 || l == 0 {
+		if l == len(room.User)-1{
 			str = str + "{'user':'" + item.OpenID + "','ready':'" + item.Ready + "','onLine':'" + item.Status + "'}"
 		} else {
 			str = str + "{'user':'" + item.OpenID + "','ready':'" + item.Ready + "','onLine':'" + item.Status + "'},"

@@ -132,7 +132,9 @@ func RoomUser(room Room) {
 // 房间内信息
 func ServerRoom(room Room, mes string) {
 	for _, item := range room.User {
-		SendMES(item.Ws, mes)
+		if item.Status != "false" {
+			SendMES(item.Ws, mes)
+		}
 	}
 }
 
@@ -141,7 +143,7 @@ func OutLine(ws *websocket.Conn) {
 	for l, ro := range PlayRoom {
 		for n, item := range ro.User {
 			if item.Ws == ws {
-				item.Status = 000
+				item.Status = "false"
 				ro.User[n] = item
 			}
 		}

@@ -213,6 +213,7 @@ func RoomSocket(mes []byte) {
 			room = item
 		}
 	}
+	log.Println(Msg.Message, "----------------")
 	switch Msg.Message {
 	case "ready":
 		Ready(room, Msg.User)
@@ -220,7 +221,6 @@ func RoomSocket(mes []byte) {
 		log.Println("发送消息-------------------------")
 		str := "{'status':'room','mes':'房间转发信息','data':{'message':'" + Msg.Data + "'}}"
 		str = strings.Replace(str, "'", "\"", -1)
-
 		ServerRoom(room, str)
 	}
 }

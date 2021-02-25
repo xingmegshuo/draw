@@ -73,6 +73,7 @@ func SearchRoom() Room {
 			index = l
 		}
 	}
+	log.Println("查找房间----------", index)
 	if index != "-1" {
 		return PlayRoom[index]
 	} else {
@@ -113,7 +114,7 @@ func Init(ws *websocket.Conn, room Room) string {
 			}
 		}
 	}
-
+	log.Println("------------房间人员", room.User, "******", len(PlayRoom))
 	str := "{'status':'system','mes':'系统消息','data':{'message':'" + "房间公告:" + userID + "进入房间'}}"
 	str = strings.Replace(str, "'", "\"", -1)
 	ServerRoom(room, str)
@@ -125,14 +126,14 @@ func Init(ws *websocket.Conn, room Room) string {
 func RoomUser(room Room) {
 	str := "{'status':'room','mes':'房间成员信息','data':["
 	for l, item := range room.User {
-		if l == len(room.User)-1 && l !=0{
-			str = str + "{'user':'" + item.OpenID + "','ready':'" + item.Ready +"','onLine':'"+ item.Status+"'},"
+		if l == len(room.User)-1 && l != 0 {
+			str = str + "{'user':'" + item.OpenID + "','ready':'" + item.Ready + "','onLine':'" + item.Status + "'},"
 		} else {
-			str = str + "{'user':'" + item.OpenID + "','ready':'" + item.Ready +"','onLine':'"+ item.Status+"'}"
+			str = str + "{'user':'" + item.OpenID + "','ready':'" + item.Ready + "','onLine':'" + item.Status + "'}"
 		}
-	
+
 	}
-	str = str +"]}"
+	str = str + "]}"
 	str = strings.Replace(str, "'", "\"", -1)
 	ServerRoom(room, str)
 }

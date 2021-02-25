@@ -128,7 +128,7 @@ func RoomUser(room Room) {
 		if l == len(room.User) && l > 0 {
 			str = str + "{'user':'" + item.OpenID + "','ready:'" + item.Ready +"','onLine':'"+ item.Status+"'},"
 		} else {
-			str = str + "{'user':'" + item.OpenID + "','ready:'" + item.Ready +"','onLine':'"+ item.Status+"'}]"
+			str = str + "{'user':'" + item.OpenID + "','ready:'" + item.Ready +"','onLine':'"+ item.Status+"'}]}"
 		}
 	}
 	str = strings.Replace(str, "'", "\"", -1)

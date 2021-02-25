@@ -102,7 +102,7 @@ func ParseData(con string, ws *websocket.Conn) {
 		Send(ws, mes)
 	case "gaming":
 		log.Println("游戏中")
-		RoomSocket(info)
+		go RoomSocket(info)
 	}
 }
 

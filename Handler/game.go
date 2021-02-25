@@ -60,7 +60,7 @@ func GameStart(mes []byte, ws *websocket.Conn) string {
 		room = NewRoom()
 	}
 	message := Init(ws, room)
-	str := "{'status':'ok','mes':'房间号','data':{'message':'" + message + "'}"
+	str := "{'status':'ok','mes':'房间号','data':{'message':'" + message + "'}}"
 	str = strings.Replace(str, "'", "\"", -1)
 	return str
 }

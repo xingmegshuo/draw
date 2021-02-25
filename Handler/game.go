@@ -110,7 +110,10 @@ func Init(ws *websocket.Conn, room Room) string {
 			}
 		}
 	}
-	ServerRoom(room, "房间公告:"+userID+"进入房间")
+
+	str := "{'status':'system','mes':'系统消息','data':{"+"房间公告:"+userID+"进入房间}"
+	str = strings.Replace(str, "'", "\"", -1)
+	ServerRoom(room, str)
 	RoomUser(room)
 	return room.Owner
 }

@@ -202,6 +202,7 @@ func Ready(room Room, user string) {
 
 // 房间内消息
 func RoomSocket(mes []byte) {
+	log.Println("--------------------房间")
 	var Msg Mes
 	var room Room
 	err := json.Unmarshal(mes, &Msg)

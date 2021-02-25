@@ -54,7 +54,7 @@ func GameStart(mes []byte, ws *websocket.Conn) string {
 	if err != nil {
 		log.Println("解析room:", err.Error())
 	}
-	if Game.Type == "true" {
+	if Game.Type == "false" {
 		room = SearchRoom()
 	} else {
 		room = NewRoom()

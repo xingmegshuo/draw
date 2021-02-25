@@ -60,7 +60,9 @@ func GameStart(mes []byte, ws *websocket.Conn) string {
 		room = NewRoom()
 	}
 	message := Init(ws, room)
-	return ToMes("ok", message)
+	str := "{'status':'ok','mes':'房间号','data':{'message':'" + message + "'}"
+	str = strings.Replace(str, "'", "\"", -1)
+	return str
 }
 
 // 查找房间
@@ -94,6 +96,7 @@ func Init(ws *websocket.Conn, room Room) string {
 		OpenID: client_user[ws],
 		Ws:     ws,
 		Ready:  "false",
+		Status: "true",
 	}
 	room.User = append(room.User, player)
 	// room.User[len(room.User)] = player
@@ -111,7 +114,7 @@ func Init(ws *websocket.Conn, room Room) string {
 		}
 	}
 
-	str := "{'status':'system','mes':'系统消息','data':{"+"房间公告:"+userID+"进入房间}"
+	str := "{'status':'system','mes':'系统消息','data':{'message':'" + "房间公告:" + userID + "进入房间'}}"
 	str = strings.Replace(str, "'", "\"", -1)
 	ServerRoom(room, str)
 	RoomUser(room)
@@ -120,12 +123,12 @@ func Init(ws *websocket.Conn, room Room) string {
 
 // 发送房间成员和状态
 func RoomUser(room Room) {
-	str := "{'status':'room','mes':'房间成员信息','data':{"
+	str := "{'status':'room','mes':'房间成员信息','data':["
 	for l, item := range room.User {
 		if l == len(room.User) && l > 0 {
-			str = str + "'" + item.OpenID + "':'" + item.Ready + "',"
+			str = str + "{'user':'" + item.OpenID + "','ready:'" + item.Ready +"','onLine':'"+ item.Status+"'},"
 		} else {
-			str = str + "'" + item.OpenID + "':'" + item.Ready + "'}"
+			str = str + "{'user':'" + item.OpenID + "','ready:'" + item.Ready +"','onLine':'"+ item.Status+"'}]"
 		}
 	}
 	str = strings.Replace(str, "'", "\"", -1)
@@ -200,7 +203,7 @@ func RoomSocket(mes []byte) {
 	case "ready":
 		Ready(room, Msg.User)
 	case "send":
-		str := "{'status':'room','mes':'房间转发信息','data':{" + Msg.Data + "}"
+		str := "{'status':'room','mes':'房间转发信息','data':{'message':'" + Msg.Data + "'}}"
 		str = strings.Replace(str, "'", "\"", -1)
 		ServerRoom(room, str)
 	}

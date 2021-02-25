@@ -101,10 +101,10 @@ func Init(ws *websocket.Conn, room Room) string {
 	}
 	room.User = append(room.User, player)
 	// room.User[len(room.User)] = player
-	room.People = room.People - 1
 	client_user[ws] = client_palyer[ws]
+	room.People = room.People - 1
 	delete(client_user, ws)
-	if room.People == 6 {
+	if room.People == 5 {
 		room.Owner = userID
 		PlayRoom[room.Owner] = room
 	} else {
@@ -114,6 +114,7 @@ func Init(ws *websocket.Conn, room Room) string {
 			}
 		}
 	}
+
 	log.Println("------------房间人员", room.User, "******", len(PlayRoom))
 	str := "{'status':'system','mes':'系统消息','data':{'message':'" + "房间公告:" + userID + "进入房间'}}"
 	str = strings.Replace(str, "'", "\"", -1)

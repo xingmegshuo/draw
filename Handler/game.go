@@ -11,7 +11,7 @@ package Handler
 import (
 	"encoding/json"
 	"log"
-	"time"
+	"strings"
 
 	"golang.org/x/net/websocket"
 )
@@ -25,12 +25,12 @@ type Player struct {
 	Ws     *websocket.Conn
 	Ready  string
 	Score  int
-	Status int
+	Status string
 }
 
 type Room struct {
 	People int
-	Public int
+	Public string
 	User   []Player
 	Owner  string
 }
@@ -39,6 +39,7 @@ type Mes struct {
 	RoomID  string
 	Message string
 	User    string
+	Data    string
 }
 
 // 房间
@@ -47,7 +48,7 @@ var PlayRoom = make(map[string]Room)
 // 是否新建房间的数据解析
 var Game GameType
 
-// 开始游戏
+// 开始游戏- 返回房间号
 func GameStart(mes []byte, ws *websocket.Conn) string {
 	var room Room
 	err := json.Unmarshal(mes, &Game)
@@ -67,7 +68,7 @@ func GameStart(mes []byte, ws *websocket.Conn) string {
 func SearchRoom() Room {
 	index := "-1"
 	for l, item := range PlayRoom {
-		if item.People > 0 && item.Public == 0 {
+		if item.People > 0 && item.Public == "true" {
 			index = l
 		}
 	}
@@ -82,7 +83,7 @@ func SearchRoom() Room {
 func NewRoom() Room {
 	ro := Room{
 		People: 6,
-		Public: 0,
+		Public: "true",
 	}
 	return ro
 }
@@ -93,7 +94,7 @@ func Init(ws *websocket.Conn, room Room) string {
 	player := Player{
 		OpenID: client_user[ws],
 		Ws:     ws,
-		Ready: "false",
+		Ready:  "false",
 	}
 	room.User[len(room.User)] = player
 	room.People = room.People - 1
@@ -115,19 +116,18 @@ func Init(ws *websocket.Conn, room Room) string {
 }
 
 // 发送房间成员和状态
-func RoomUser(room Room){
+func RoomUser(room Room) {
 	str := "{'status':'room','mes':'房间成员信息','data':{"
-	for l, item : = range room.User{
-		if l == len(room.User)&& l > 0 {
-			str=str+"'"+item.OpenID+"':'"+item.Ready+"',"
-		}else{
-			str=str+"'"+item.OpenID+"':'"+item.Ready+"'}"
+	for l, item := range room.User {
+		if l == len(room.User) && l > 0 {
+			str = str + "'" + item.OpenID + "':'" + item.Ready + "',"
+		} else {
+			str = str + "'" + item.OpenID + "':'" + item.Ready + "'}"
 		}
 	}
 	str = strings.Replace(str, "'", "\"", -1)
-	ServerRoom(room,str)
+	ServerRoom(room, str)
 }
-
 
 // 房间内信息
 func ServerRoom(room Room, mes string) {
@@ -154,5 +154,49 @@ func SendMES(ws *websocket.Conn, mes string) {
 	if err := websocket.Message.Send(ws, mes); err != nil {
 		log.Println("用户离线", err.Error())
 		OutLine(ws)
+	}
+}
+
+// 更新房间到房间列表
+func UpdatePlayRoom(room Room) {
+	for l, item := range PlayRoom {
+		if item.Owner == room.Owner {
+			PlayRoom[l] = room
+		}
+	}
+}
+
+// 用户准备
+func Ready(room Room, user string) {
+	for l, item := range room.User {
+		if item.OpenID == user {
+			item.Ready = "true"
+			room.User[l] = item
+		}
+	}
+	RoomUser(room)
+	UpdatePlayRoom(room)
+}
+
+// 房间内消息
+func RoomSocket(mes []byte) {
+	var Msg Mes
+	var room Room
+	err := json.Unmarshal(mes, &Msg)
+	if err != nil {
+		log.Println("数据问题:", err.Error())
+	}
+	for l, item := range PlayRoom {
+		if l == Msg.RoomID {
+			room = item
+		}
+	}
+	switch Msg.Message {
+	case "ready":
+		Ready(room, Msg.User)
+	case "send":
+		str := "{'status':'room','mes':'房间转发信息','data':{" + Msg.Data + "}"
+		str = strings.Replace(str, "'", "\"", -1)
+		ServerRoom(room, str)
 	}
 }

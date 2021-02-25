@@ -16,8 +16,6 @@ import (
 	"golang.org/x/net/websocket"
 )
 
-
-
 type Player struct {
 	OpenID string
 	Ws     *websocket.Conn
@@ -39,17 +37,24 @@ type Mes struct {
 	User    string
 	Data    string
 }
+type GameType struct {
+	Type string
+}
 
 // 房间
 var PlayRoom = make(map[string]Room)
 
 // 是否新建房间的数据解析
-
+var Game GameType
 
 // 开始游戏- 返回房间号
-func GameStart(new string, ws *websocket.Conn) string {
+func GameStart(mes []byte, ws *websocket.Conn) string {
 	var room Room
-	if new == "true" {
+	err := json.Unmarshal(mes, &Game)
+	if err != nil {
+		log.Println("解析room:", err.Error())
+	}
+	if Game.Type == "true" {
 		room = SearchRoom()
 	} else {
 		room = NewRoom()
@@ -90,7 +95,8 @@ func Init(ws *websocket.Conn, room Room) string {
 		Ws:     ws,
 		Ready:  "false",
 	}
-	room.User[len(room.User)] = player
+	room.User = append(room.User, player)
+	// room.User[len(room.User)] = player
 	room.People = room.People - 1
 	client_user[ws] = client_palyer[ws]
 	delete(client_user, ws)

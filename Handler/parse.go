@@ -47,14 +47,14 @@ func ParseData(con string, ws *websocket.Conn) {
 		log.Println("账号升级")
 		mes := Upgrade(info)
 		Send(ws, mes)
-	case "back":
-		log.Println("获取背包")
-		mes := GetBack(info)
-		Send(ws, mes)
-	case "addback":
-		log.Println("购买商品，增加背包")
-		mes := AddBack(info)
-		Send(ws, mes)
+	// case "back":
+	// 	log.Println("获取背包")
+	// 	mes := GetBack(info)
+	// 	Send(ws, mes)
+	// case "addback":
+	// 	log.Println("购买商品，增加背包")
+	// 	mes := AddBack(info)
+	// 	Send(ws, mes)
 	case "record":
 		log.Println("获取最近战绩")
 		mes := GetRecord(info)

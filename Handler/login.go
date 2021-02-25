@@ -9,17 +9,18 @@
 package Handler
 
 import (
+	"draw/Mydb"
 	"encoding/json"
 	"log"
 	"strconv"
 	"strings"
-	"draw/Mydb"
 
 	"golang.org/x/net/websocket"
 )
 
 var ctrlUser = Mydb.NewUserCtrl()
-var ctrlBack = Mydb.NewBackCtrl()
+
+// var ctrlBack = Mydb.NewBackCtrl()
 var ctrlBuddy = Mydb.NewBuddyCtrl()
 var ctrlRecord = Mydb.NewRecordCtrl()
 var user Mydb.User
@@ -39,15 +40,15 @@ func Login(mes []byte, ws *websocket.Conn) string {
 		// log.Println("hhhh")
 		thisUser := Mydb.User{
 			OpenID: user.OpenID,
-		} 
+		}
 		U, has := ctrlUser.GetUser(thisUser)
 		// log.Println("aaaa")
 		if has {
 			mes := UserToString("ok", U, "登录成功")
 			// log.Println("bbbb")
-			for k,v := range client_user{
-				if v == U.OpenID{
-					delete(client_user,k)
+			for k, v := range client_user {
+				if v == U.OpenID {
+					delete(client_user, k)
 				}
 			}
 			client_user[ws] = U.OpenID
@@ -58,7 +59,7 @@ func Login(mes []byte, ws *websocket.Conn) string {
 			user.Id = 0
 			// log.Println(user)
 			ctrlUser.Insert(user)
-			InitBack(user)
+			// InitBack(user)
 			u, _ := ctrlUser.GetUser(user)
 			client_user[ws] = u.OpenID
 			mes := UserToString("ok", u, "登录成功")
@@ -85,35 +86,34 @@ func ToMes(status string, mes string) string {
 }
 
 // 初始化个人仓库的内容
-func InitBack(user Mydb.User) {
-	user, has := ctrlUser.GetUser(user)
-	if has {
+// func InitBack(user Mydb.User) {
+// 	user, has := ctrlUser.GetUser(user)
+// 	if has {
 
-		back := Mydb.Backpack{
-			Name:     "基础帽子",
-			Property: 0,
-			User:     int(user.Id),
-		}
-		back1 := Mydb.Backpack{
-			Name:     "基础下装",
-			Property: 0,
-			User:     int(user.Id),
-		}
-		back2 := Mydb.Backpack{
-			Name:     "基础下装",
-			Property: 0,
-			User:     int(user.Id),
-		}
-		ctrlBack.Insert(back1)
-		ctrlBack.Insert(back2)
-		ctrlBack.Insert(back)
-	}
+// 		back := Mydb.Backpack{
+// 			Name:     "基础帽子",
+// 			Property: 0,
+// 			User:     int(user.Id),
+// 		}
+// 		back1 := Mydb.Backpack{
+// 			Name:     "基础下装",
+// 			Property: 0,
+// 			User:     int(user.Id),
+// 		}
+// 		back2 := Mydb.Backpack{
+// 			Name:     "基础下装",
+// 			Property: 0,
+// 			User:     int(user.Id),
+// 		}
+// 		ctrlBack.Insert(back1)
+// 		ctrlBack.Insert(back2)
+// 		ctrlBack.Insert(back)
+// 	}
 
-}
-
+// }
 
 // 返回用户
-func GetUserMes(mes[]byte) string{
+func GetUserMes(mes []byte) string {
 	err := json.Unmarshal(mes, &user)
 	if err != nil {
 		log.Println("数据问题:", err.Error())
@@ -122,7 +122,7 @@ func GetUserMes(mes[]byte) string{
 	thisUser := Mydb.User{
 		OpenID: user.OpenID,
 	}
-	U,_ := ctrlUser.GetUser(thisUser)
+	U, _ := ctrlUser.GetUser(thisUser)
 	str := UserToString("ok", U, "获取成功")
 	return str
 }

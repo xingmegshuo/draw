@@ -100,7 +100,7 @@ func ParseData(con string, ws *websocket.Conn) {
 		log.Println("开始游戏")
 		mes := GameStart(info, ws)
 		Send(ws, mes)
-	case "gameing":
+	case "gaming":
 		log.Println("游戏中")
 		RoomSocket(info)
 	}

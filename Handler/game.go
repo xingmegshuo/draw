@@ -16,9 +16,7 @@ import (
 	"golang.org/x/net/websocket"
 )
 
-type GameType struct {
-	New string
-}
+
 
 type Player struct {
 	OpenID string
@@ -46,16 +44,12 @@ type Mes struct {
 var PlayRoom = make(map[string]Room)
 
 // 是否新建房间的数据解析
-var Game GameType
+
 
 // 开始游戏- 返回房间号
-func GameStart(mes []byte, ws *websocket.Conn) string {
+func GameStart(new string, ws *websocket.Conn) string {
 	var room Room
-	err := json.Unmarshal(mes, &Game)
-	if err != nil {
-		log.Println("数据问题:", err.Error())
-	}
-	if Game.New == "true" {
+	if new == "true" {
 		room = SearchRoom()
 	} else {
 		room = NewRoom()

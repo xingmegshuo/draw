@@ -185,6 +185,10 @@ func UpdatePlayRoom(room Room) {
 		if item.Owner == room.Owner {
 			PlayRoom[l] = room
 		}
+		if item.People == 6 {
+			log.Println("删除房间-----------")
+			delete(PlayRoom, l)
+		}
 	}
 }
 
@@ -194,6 +198,23 @@ func Ready(room Room, user string) {
 		if item.OpenID == user {
 			item.Ready = "true"
 			room.User[l] = item
+		}
+	}
+	RoomUser(room)
+	UpdatePlayRoom(room)
+}
+
+// 退出房间
+func Leave(room Room, user string) {
+	str := "{'status':'system','mes':'系统消息','data':{'message':'" + "房间公告:" + user + "退出房间'}}"
+	str = strings.Replace(str, "'", "\"", -1)
+	ServerRoom(room, str)
+	for l, item := range room.User {
+		if item.OpenID == user {
+			room.User = append(room.User[:l], room.User[l+1:]...)
+			room.People = room.People + 1
+			client_user[item.Ws] = client_palyer[item.Ws]
+			delete(client_palyer, item.Ws)
 		}
 	}
 	RoomUser(room)
@@ -223,5 +244,9 @@ func RoomSocket(mes []byte) {
 		str := "{'status':'room','mes':'房间转发信息','data':{'message':'" + Msg.Data + "'}}"
 		str = strings.Replace(str, "'", "\"", -1)
 		ServerRoom(room, str)
+	case "leave":
+		log.Println("退出房间----------------")
+		Leave(room,Msg.User)
 	}
+	
 }

@@ -27,9 +27,11 @@ var client_palyer = make(map[*websocket.Conn]string)
 // var client_buddy = make(map[*websocket.Conn]string)
 
 // 解析key
-func ParseData(con string, ws *websocket.Conn) {
+func ParseData(con string, ws *websocket.Conn, clientMap map[*websocket.Conn]string) {
 	// log.Println("开始解析", con)
 	var data Data
+	// 清除连接
+	Clear(clientMap)
 	oldData := []byte(con)
 	err := json.Unmarshal(oldData, &data)
 	if err != nil {
@@ -110,6 +112,7 @@ func ParseData(con string, ws *websocket.Conn) {
 func CloseUser(ws *websocket.Conn) {
 	delete(client_user, ws)
 	delete(client_palyer, ws)
+	ws.Close()
 }
 
 // 数据返回
@@ -117,5 +120,14 @@ func Send(ws *websocket.Conn, mes string) {
 	if err := websocket.Message.Send(ws, mes); err != nil {
 		log.Println("客户端丢失", err.Error())
 		CloseUser(ws)
+	}
+}
+
+// 清除连接
+func Clear(clientMap map[*websocket.Conn]string) {
+	for ws,_ := range client_user {
+		if _, ok := clientMap[ws]; !ok {
+			CloseUser(ws)
+		}
 	}
 }

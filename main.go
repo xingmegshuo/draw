@@ -12,17 +12,40 @@ import (
 	"draw/Handler"
 	"log"
 	"net/http"
+	"os"
 
 	"golang.org/x/net/websocket"
 )
 
 var client_map = make(map[*websocket.Conn]string)
 
+// 创建log输出
+func CreateDir(dir string) (bool, error) {
+	_, err := os.Stat(dir)
+	if err == nil {
+		//directory exists
+		return true, nil
+	}
+	err2 := os.MkdirAll(dir, 0755)
+	if err2 != nil {
+		return false, err2
+	}
+	return true, nil
+}
+
 // 开启服务端
 func main() {
+	res2, err := CreateDir("./LOG")
+	if res2 == false {
+		panic(err)
+	}
+	file, _ := os.OpenFile("./LOG/error.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	defer file.Close()
+	log.SetOutput(file)
+	log.SetPrefix("[Println]")
+	log.SetFlags(log.Llongfile | log.Ldate | log.Ltime)
 	log.Println("服务开启")
 	http.Handle("/", websocket.Handler(Echo))
-
 	if err := http.ListenAndServe(":4321", nil); err != nil {
 		log.Fatal("ListenAndServe:", err)
 	}
@@ -44,24 +67,18 @@ func ParseConn(ws *websocket.Conn) {
 	for {
 		var reply string
 		if err = websocket.Message.Receive(ws, &reply); err != nil {
-			log.Println("客户端丢失")
+			log.Println("客户端丢失----------first")
 			CloseConn(ws)
 			break
 		}
 		log.Printf("用户发送了: %v\n", string(reply))
-
 		// 发送给解析函数
-		go Handler.ParseData(string(reply), ws)
-		// log.Println("等待三秒返回测试")
-		// time.Sleep(time.Duration(20) * time.Second)
-
+		go Handler.ParseData(string(reply), ws, client_map)
 	}
 }
 
 // 断开连接
 func CloseConn(ws *websocket.Conn) {
 	delete(client_map, ws)
-	// Handler.CloseUser(ws)
 	ws.Close()
-	// log.Println(len(client_map))
 }

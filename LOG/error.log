@@ -1,2 +1,16 @@
 [Println]2021/02/28 23:51:40 /Users/ant/Desktop/Mypro/draw/main.go:47: 服务开启
 [Println]2021/03/01 00:19:04 /Users/ant/Desktop/Mypro/draw/main.go:47: 服务开启
+[Println]2021/03/01 00:29:06 C:/Users/Administrator/Desktop/draw/main.go:47: 服务开启
+[Println]2021/03/01 09:38:47 C:/Users/Administrator/Desktop/draw/main.go:66: map[0xc000097b00:file:]
+[Println]2021/03/01 09:38:47 C:/Users/Administrator/Desktop/draw/main.go:74: 用户发送了: {"name":"login","values":"{\"nickName\":\"阿0\",\"openID\":\"1614562727928\",\"avatarUrl\":\"img/my/b_5.png\"}"}
+[Println]2021/03/01 09:38:47 C:/Users/Administrator/Desktop/draw/Handler/parse.go:43: [123 34 110 105 99 107 78 97 109 101 34 58 34 233 152 191 48 34 44 34 111 112 101 110 73 68 34 58 34 49 54 49 52 53 54 50 55 50 55 57 50 56 34 44 34 97 118 97 116 97 114 85 114 108 34 58 34 105 109 103 47 109 121 47 98 95 53 46 112 110 103 34 125] ------- {"nickName":"阿0","openID":"1614562727928","avatarUrl":"img/my/b_5.png"}
+[Println]2021/03/01 09:38:47 C:/Users/Administrator/Desktop/draw/Handler/parse.go:46: 登录操作:
+[Println]2021/03/01 09:38:49 C:/Users/Administrator/Desktop/draw/main.go:66: map[0xc000097b00:file: 0xc000162240:file:]
+[Println]2021/03/01 09:38:49 C:/Users/Administrator/Desktop/draw/main.go:74: 用户发送了: {"name":"login","values":"{\"nickName\":\"阿0\",\"openID\":\"1614562729936\",\"avatarUrl\":\"img/my/b_5.png\"}"}
+[Println]2021/03/01 09:38:49 C:/Users/Administrator/Desktop/draw/Handler/parse.go:43: [123 34 110 105 99 107 78 97 109 101 34 58 34 233 152 191 48 34 44 34 111 112 101 110 73 68 34 58 34 49 54 49 52 53 54 50 55 50 57 57 51 54 34 44 34 97 118 97 116 97 114 85 114 108 34 58 34 105 109 103 47 109 121 47 98 95 53 46 112 110 103 34 125] ------- {"nickName":"阿0","openID":"1614562729936","avatarUrl":"img/my/b_5.png"}
+[Println]2021/03/01 09:38:49 C:/Users/Administrator/Desktop/draw/Handler/parse.go:46: 登录操作:
+[Println]2021/03/01 09:38:53 C:/Users/Administrator/Desktop/draw/main.go:74: 用户发送了: {"name":"room","values":"{\"type\":\"true\"}"}
+[Println]2021/03/01 09:38:53 C:/Users/Administrator/Desktop/draw/Handler/parse.go:43: [123 34 116 121 112 101 34 58 34 116 114 117 101 34 125] ------- {"type":"true"}
+[Println]2021/03/01 09:38:53 C:/Users/Administrator/Desktop/draw/Handler/parse.go:102: 开始游戏
+[Println]2021/03/01 09:38:53 C:/Users/Administrator/Desktop/draw/Handler/game.go:135: 1614562727928 -----------用户ID 
+[Println]2021/03/01 09:38:53 C:/Users/Administrator/Desktop/draw/Handler/game.go:156: ------------房间人员 [{1614562727928 0xc000097b00 false 0 true}] ****** 1

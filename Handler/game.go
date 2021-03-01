@@ -258,7 +258,7 @@ func Leave(room Room, user string) {
 			client_user[item.Ws] = client_palyer[item.Ws]
 			delete(client_palyer, item.Ws)
 		}
-		if room.Owner == user {
+		if room.Owner == user && len(room.User) > 0 {
 			room.Owner = room.User[0].OpenID
 		}
 	}

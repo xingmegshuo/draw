@@ -218,6 +218,7 @@ func UpdatePlayRoom(room Room) {
 		}
 		for _, u := range item.User {
 			if _, ok := client_palyer[u.Ws]; !ok {
+				log.Println("-----------不在列表中",len(client_palyer))
 				Leave(item, u.OpenID)
 			}
 		}

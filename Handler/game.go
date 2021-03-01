@@ -216,12 +216,12 @@ func UpdatePlayRoom(room Room) {
 			log.Println("删除房间-----------")
 			delete(PlayRoom, l)
 		}
-		for _, u := range item.User {
-			if _, ok := client_palyer[u.Ws]; !ok {
-				log.Println("-----------不在列表中",len(client_palyer))
-				Leave(item, u.OpenID)
-			}
-		}
+		// for _, u := range item.User {
+		// 	if _, ok := client_palyer[u.Ws]; !ok {
+		// 		log.Println("-----------不在列表中",len(client_palyer))
+		// 		Leave(item, u.OpenID)
+		// 	}
+		// }
 	}
 }
 
@@ -269,7 +269,6 @@ func Leave(room Room, user string) {
 
 // 房间内消息
 func RoomSocket(mes []byte) {
-	log.Println("--------------------房间")
 	var Msg Mes
 	var room Room
 	err := json.Unmarshal(mes, &Msg)

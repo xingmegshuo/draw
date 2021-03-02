@@ -252,7 +252,7 @@ func Leave(room Room, user string) {
 	str := "{'status':'system','mes':'系统消息','data':{'message':'" + "房间公告:" + user + "退出房间'}}"
 	str = strings.Replace(str, "'", "\"", -1)
 	ServerRoom(room, str)
-	a := 0
+	a := -1
 	for l, item := range room.User {
 		if item.OpenID == user {
 			a = l
@@ -265,7 +265,9 @@ func Leave(room Room, user string) {
 		}
 	}
 	log.Println(a, "红红火火恍恍惚惚红红火火恍恍惚惚或或或")
-	room.User = append(room.User[:a], room.User[a+1:]...)
+	if a != -1 {
+		room.User = append(room.User[:a], room.User[a+1:]...)
+	}
 	RoomUser(room)
 	UpdatePlayRoom(room)
 }
@@ -372,13 +374,13 @@ func Start(room Room, user string) {
 			a = a + 1
 		}
 	}
-	if room.Owner == user && a > 1 && room.People == 0 {
+	if room.Owner == user && a > 1 && room.People <= 4 {
 		ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 游戏五秒后开始"))
 		UnderTime(5, room)
 		status := IsStart(room)
 		if status {
 			ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 游戏正式开始"))
-			go OneGame(room)
+			OneGame(room)
 		} else {
 			ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 用户取消准备,游戏未能开始"))
 		}

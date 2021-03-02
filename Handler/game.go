@@ -491,6 +491,7 @@ func GameOver(room Room) {
 func UnderTime(count int, room Room) {
 	for i := 0; i < count; i++ {
 		ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 倒计时还有"+strconv.Itoa(count-i)+"秒"))
+		ServerRoom(room, StrToJSON("room", "倒计时", strconv.Itoa(count-i)))
 		time.Sleep(time.Second * 1)
 	}
 }

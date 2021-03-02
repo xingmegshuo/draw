@@ -40,7 +40,7 @@ func ParseData(con string, ws *websocket.Conn, clientMap map[*websocket.Conn]str
 	}
 	// log.Printf("类型%T", data.Values)
 	info := []byte(data.Values)
-	log.Println(info, "-------", data.Values)
+	// log.Println(info, "-------", data.Values)
 	switch data.Name {
 	case "login":
 		log.Println("登录操作:")

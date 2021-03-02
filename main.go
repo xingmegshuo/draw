@@ -71,7 +71,7 @@ func ParseConn(ws *websocket.Conn) {
 			CloseConn(ws)
 			break
 		}
-		log.Printf("用户发送了: %v\n", string(reply))
+		// log.Printf("用户发送了: %v\n", string(reply))
 		// 发送给解析函数
 		go Handler.ParseData(string(reply), ws, client_map)
 	}

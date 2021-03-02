@@ -160,7 +160,17 @@ func Init(ws *websocket.Conn, room Room) string {
 	// 加入房间自动准备
 	Ready(room, userID)
 	RoomUser(room)
-	return room.Owner
+	return GetRoomID(room)
+}
+
+// 获取房间号
+func GetRoomID(room Room) string {
+	for l, ro := range PlayRoom {
+		if ro.Owner == room.Owner {
+			return l
+		}
+	}
+	return "null"
 }
 
 // 发送房间成员和状态
@@ -374,7 +384,7 @@ func Start(room Room, user string) {
 			a = a + 1
 		}
 	}
-	if room.Owner == user && a > 1 && room.People <= 4 {
+	if room.Owner == user && a >= 1 && room.People <= 4 {
 		ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 游戏五秒后开始"))
 		UnderTime(5, room)
 		status := IsStart(room)

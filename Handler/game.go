@@ -252,9 +252,10 @@ func Leave(room Room, user string) {
 	str := "{'status':'system','mes':'系统消息','data':{'message':'" + "房间公告:" + user + "退出房间'}}"
 	str = strings.Replace(str, "'", "\"", -1)
 	ServerRoom(room, str)
+	a := 0
 	for l, item := range room.User {
 		if item.OpenID == user {
-			room.User = append(room.User[:l], room.User[l+1:]...)
+			a = l
 			room.People = room.People + 1
 			client_user[item.Ws] = client_palyer[item.Ws]
 			delete(client_palyer, item.Ws)
@@ -263,6 +264,8 @@ func Leave(room Room, user string) {
 			room.Owner = room.User[0].OpenID
 		}
 	}
+	log.Println(a, "红红火火恍恍惚惚红红火火恍恍惚惚或或或")
+	room.User = append(room.User[:a], room.User[a+1:]...)
 	RoomUser(room)
 	UpdatePlayRoom(room)
 }
@@ -371,7 +374,7 @@ func Start(room Room, user string) {
 	}
 	if room.Owner == user && a > 1 && room.People == 0 {
 		ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 游戏五秒后开始"))
-		time.Sleep(time.Second * 5)
+		UnderTime(5, room)
 		status := IsStart(room)
 		if status {
 			ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 游戏正式开始"))
@@ -400,6 +403,11 @@ func Word(room Room, user string) {
 func Choose(room Room, word string) {
 	room.Word = word
 	UpdatePlayRoom(room)
+	for _, u := range room.User {
+		if u.OpenID == room.Draw {
+			SendMES(u.Ws, StrToJSON("room", "选择的词语", word))
+		}
+	}
 }
 
 // 游戏流程
@@ -409,21 +417,21 @@ func OneGame(room Room) {
 		UpdatePlayRoom(room)
 		ServerRoom(room, StrToJSON("room", "画家", item.OpenID))
 		ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 第"+strconv.Itoa(l+1))+"回合,画师为"+item.OpenID+",请他开始选词")
-		time.Sleep(time.Second * 20)
+		UnderTime(10, room)
 		if len(room.Word) > 0 {
 			ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 选词完毕"))
 			time.Sleep(time.Second * 1)
 			ServerRoom(room, StrToJSON("room", "游戏提示信息", "游戏提示: 两个字"))
-			time.Sleep(time.Second * 29)
+			UnderTime(5, room)
 			ServerRoom(room, StrToJSON("room", "游戏提示信息", "游戏提示: 动物名称"))
-			time.Sleep(time.Second * 30)
+			UnderTime(5, room)
 			ServerRoom(room, StrToJSON("room", "游戏提示信息", "游戏提示: 山中猛虎"))
-			time.Sleep(time.Second * 30)
+			UnderTime(10, room)
 			GuessPeople = len(room.User) - 1
 			RoundOver(room)
 		} else {
-			ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 此房间服务器错误"))
-			break
+			Choose(room, "老虎")
+			continue
 		}
 		if GuessPeople == 0 {
 			GuessPeople = len(room.User) - 1
@@ -442,7 +450,7 @@ func OneGame(room Room) {
 func RoundOver(room Room) {
 	ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 本轮回合结束,正确答案"+room.Word))
 	ServerRoom(room, StrToJSON("room", "正确答案", room.Word))
-	time.Sleep(time.Second * 5)
+	UnderTime(5, room)
 }
 
 // 游戏结束
@@ -463,6 +471,14 @@ func GameOver(room Room) {
 	if len(room.User) != 6 {
 		room.Status = true
 	}
-	time.Sleep(time.Second * 5)
+	UnderTime(5, room)
 	UpdatePlayRoom(room)
+}
+
+// 倒计时
+func UnderTime(count int, room Room) {
+	for i := 0; i < count; i++ {
+		ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 倒计时还有"+strconv.Itoa(count-i)+"秒"))
+		time.Sleep(time.Second * 1)
+	}
 }

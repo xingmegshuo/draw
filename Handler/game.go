@@ -266,6 +266,7 @@ func Ready(room Room, user string) {
 // 退出房间
 func Leave(room Room, user string) {
 	a := -1
+	log.Println(len(room.User), "之前几个用户")
 	for l, item := range room.User {
 		if item.OpenID == user {
 			a = l
@@ -280,8 +281,9 @@ func Leave(room Room, user string) {
 	if a != -1 {
 		room.User = append(room.User[:a], room.User[a+1:]...)
 	}
-	RoomUser(room)
+	log.Println(len(room.User), "后来几个用户", "几个房间", len(PlayRoom))
 	UpdatePlayRoom(room)
+	RoomUser(room)
 	str := "{'status':'system','mes':'系统消息','data':{'message':'" + "房间公告:" + user + "退出房间'}}"
 	str = strings.Replace(str, "'", "\"", -1)
 	ServerRoom(room, str)
@@ -430,39 +432,47 @@ func Choose(room Room, word string) {
 	log.Println(room.Word, "-----------------词语")
 }
 
-// 游戏流程
-func OneGame(room Room) {
-	for _, ro := range PlayRoom {
-		if ro.Owner == room.Owner {
-			for l, item := range room.User {
-				room.Draw = item.OpenID
-				UpdatePlayRoom(room)
-				ServerRoom(room, StrToJSON("room", "画家", item.OpenID))
-				ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 第"+strconv.Itoa(l+1)+"回合,画师为"+item.OpenID+",请他开始选词"))
-				UnderTime(10, room)
-				log.Println(room.Word, "-----------------词语")
-				if len(room.Word) == 0 {
-					Choose(room, "老虎")
-				}
-				log.Println(room.Word, "-----------------词语")
-				ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 选词完毕"))
-				RoundTime(60, room)
-				GuessPeople = len(room.User) - 1
-				RoundOver(room)
-				if GuessPeople == 0 {
-					GuessPeople = len(room.User) - 1
-					RoundOver(room)
-					continue
-				}
-				if len(room.User) < 2 {
-					GameOver(room)
-					break
-				}
-			}
-			GameOver(room)
+// 更新房间
+func GetRoom(room Room) Room {
+	var ro Room
+	for _, item := range PlayRoom {
+		if item.Owner == room.Owner {
+			ro = item
 		}
 	}
+	return ro
+}
 
+// 游戏流程
+func OneGame(room Room) {
+	for l, item := range room.User {
+		room.Draw = item.OpenID
+		UpdatePlayRoom(room)
+		ServerRoom(room, StrToJSON("room", "画家", item.OpenID))
+		ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 第"+strconv.Itoa(l+1)+"回合,画师为"+item.OpenID+",请他开始选词"))
+		UnderTime(10, room)
+		room = GetRoom(room)
+		if len(room.Word) == 0 {
+			Choose(room, "老虎")
+		}
+		log.Println(room.Word, "-----------------词语")
+		ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 选词完毕"))
+		RoundTime(60, room)
+		GuessPeople = len(room.User) - 1
+		RoundOver(room)
+		if GuessPeople == 0 {
+			GuessPeople = len(room.User) - 1
+			RoundOver(room)
+			continue
+		}
+		if len(room.User) < 2 {
+			room = GetRoom(room)
+			GameOver(room)
+			break
+		}
+	}
+	room = GetRoom(room)
+	GameOver(room)
 }
 
 // 回合结束

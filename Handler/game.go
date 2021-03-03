@@ -206,6 +206,7 @@ func OutLine(ws *websocket.Conn) {
 	for _, ro := range PlayRoom {
 		for _, item := range ro.User {
 			if item.Ws == ws {
+				log.Println("退出此用户------", item.OpenID, len(ro.User))
 				Leave(ro, item.OpenID)
 			}
 		}
@@ -298,7 +299,6 @@ func RoomSocket(mes []byte) {
 			room = item
 		}
 	}
-	log.Println(Msg.Message, "----------------")
 	GuessPeople = len(room.User) - 1
 	switch Msg.Message {
 	case "ready":

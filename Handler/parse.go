@@ -95,7 +95,7 @@ func ParseData(con string, ws *websocket.Conn, clientMap map[*websocket.Conn]str
 		mes := Chat(info)
 		Send(ws, mes)
 	case "getUser":
-		log.Println("获取游戏中信息")
+		log.Println("获取用户信息")
 		mes := GetUserMes(info)
 		Send(ws, mes)
 	case "room":
@@ -103,7 +103,6 @@ func ParseData(con string, ws *websocket.Conn, clientMap map[*websocket.Conn]str
 		mes := GameStart(info, ws)
 		Send(ws, mes)
 	case "gaming":
-		log.Println("游戏中")
 		go RoomSocket(info)
 	}
 }
@@ -125,8 +124,9 @@ func Send(ws *websocket.Conn, mes string) {
 
 // 清除连接
 func Clear(clientMap map[*websocket.Conn]string) {
-	for ws,_ := range client_user {
+	for ws, _ := range client_user {
 		if _, ok := clientMap[ws]; !ok {
+			log.Println("清除无效链接")
 			CloseUser(ws)
 		}
 	}

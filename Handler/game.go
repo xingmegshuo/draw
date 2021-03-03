@@ -95,7 +95,6 @@ func IsIn(user string) bool {
 func SearchRoom(roomID string) Room {
 	index := "-1"
 	for l, item := range PlayRoom {
-		log.Println(l, "--------房间id", len(PlayRoom))
 		if item.People > 0 && item.Public == "true" && item.Status == true {
 			index = l
 		}
@@ -142,7 +141,7 @@ func Init(ws *websocket.Conn, room Room) string {
 		room.User = append(room.User, player)
 	}
 	// room.User[len(room.User)] = player
-	client_user[ws] = client_palyer[ws]
+	client_palyer[ws] = client_user[ws]
 	room.People = room.People - 1
 	delete(client_user, ws)
 	if room.People == 5 {
@@ -279,7 +278,6 @@ func Leave(room Room, user string) {
 			room.Owner = room.User[0].OpenID
 		}
 	}
-	log.Println(a, "红红火火恍恍惚惚红红火火恍恍惚惚或或或")
 	if a != -1 {
 		room.User = append(room.User[:a], room.User[a+1:]...)
 	}
@@ -306,7 +304,6 @@ func RoomSocket(mes []byte) {
 	case "ready":
 		Ready(room, Msg.User)
 	case "send":
-		log.Println("发送消息-------------------------")
 		str := "{'status':'room','mes':'房间转发信息','data':{'message':'" + Msg.Data + "'}}"
 		str = strings.Replace(str, "'", "\"", -1)
 		ServerRoom(room, str)

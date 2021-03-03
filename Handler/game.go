@@ -442,11 +442,11 @@ func OneGame(room Room) {
 		ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 选词完毕"))
 		time.Sleep(time.Second * 1)
 		ServerRoom(room, StrToJSON("room", "游戏提示信息", "游戏提示: 两个字"))
-		UnderTime(5, room)
-		ServerRoom(room, StrToJSON("room", "游戏提示信息", "游戏提示: 动物名称"))
-		UnderTime(5, room)
-		ServerRoom(room, StrToJSON("room", "游戏提示信息", "游戏提示: 山中猛虎"))
 		UnderTime(10, room)
+		ServerRoom(room, StrToJSON("room", "游戏提示信息", "游戏提示: 动物名称"))
+		UnderTime(10, room)
+		ServerRoom(room, StrToJSON("room", "游戏提示信息", "游戏提示: 山中猛虎"))
+		UnderTime(20, room)
 		GuessPeople = len(room.User) - 1
 		RoundOver(room)
 		if GuessPeople == 0 {

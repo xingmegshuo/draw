@@ -318,7 +318,9 @@ func RoomSocket(mes []byte) {
 		log.Println("获取生成的词语-----------------", room.Owner)
 		Word(room, Msg.User)
 	case "choose":
-		log.Println("选词----------------", room.Owner)
+		log.Println("选词----------------", room.Owner, Msg.Data)
+		str := strings.Replace(Msg.Data, "\"", "", -1)
+		log.Println(str)
 		Choose(room, Msg.Data)
 	case "guess":
 		log.Println("猜词---------------", room.Word)
@@ -334,7 +336,7 @@ func Guess(room Room, user string, word string) {
 		if item.OpenID == user && room.Draw != user {
 			str = strings.Replace(word, room.Word, "**", -1)
 			if word == room.Word {
-				item.Score = item.Score + GuessPeople * 2
+				item.Score = item.Score + GuessPeople*2
 				GuessPeople = GuessPeople - 1
 				add = true
 				ServerRoom(room, StrToJSON("room", "答对加分", "[{'user':'"+user+"','score':'"+strconv.Itoa(item.Score)+"'}]"))

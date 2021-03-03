@@ -334,10 +334,10 @@ func Guess(room Room, user string, word string) {
 		if item.OpenID == user && room.Draw != user {
 			str = strings.Replace(word, room.Word, "**", -1)
 			if word == room.Word {
-				item.Score = GuessPeople * 2
+				item.Score = item.Score + GuessPeople * 2
 				GuessPeople = GuessPeople - 1
 				add = true
-				ServerRoom(room, StrToJSON("room", "答对加分", "{'user':'"+user+"','score':'"+strconv.Itoa(item.Score)+"'}"))
+				ServerRoom(room, StrToJSON("room", "答对加分", "[{'user':'"+user+"','score':'"+strconv.Itoa(item.Score)+"'}]"))
 			}
 		} else {
 			str = strings.Replace(word, room.Word, "**", -1)

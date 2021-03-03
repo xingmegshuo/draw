@@ -217,6 +217,7 @@ func OutLine(ws *websocket.Conn) {
 func SendMES(ws *websocket.Conn, mes string) {
 	if err := websocket.Message.Send(ws, mes); err != nil {
 		log.Println("用户离线", err.Error())
+		ws.Close()
 		OutLine(ws)
 	}
 }

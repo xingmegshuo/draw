@@ -43,7 +43,8 @@ type Mes struct {
 	Data    string
 }
 type GameType struct {
-	Type string
+	Type   string
+	RoomID string
 }
 
 // 房间
@@ -63,10 +64,11 @@ func GameStart(mes []byte, ws *websocket.Conn) string {
 	in := IsIn(client_palyer[ws])
 	if in {
 		str := "{'status':'error','mes':'加入房间错误','data':{'message':'您已经在房间中'}}"
+		str = strings.Replace(str, "'", "\"", -1)
 		return str
 	} else {
 		if Game.Type == "false" {
-			room = SearchRoom()
+			room = SearchRoom(Game.RoomID)
 		} else {
 			room = NewRoom()
 		}
@@ -90,11 +92,14 @@ func IsIn(user string) bool {
 }
 
 // 查找房间
-func SearchRoom() Room {
+func SearchRoom(roomID string) Room {
 	index := "-1"
 	for l, item := range PlayRoom {
 		log.Println(l, "--------房间id", len(PlayRoom))
 		if item.People > 0 && item.Public == "true" && item.Status == true {
+			index = l
+		}
+		if l == roomID && item.Status == true {
 			index = l
 		}
 	}
@@ -428,7 +433,7 @@ func OneGame(room Room) {
 		room.Draw = item.OpenID
 		UpdatePlayRoom(room)
 		ServerRoom(room, StrToJSON("room", "画家", item.OpenID))
-		ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 第"+strconv.Itoa(l+1))+"回合,画师为"+item.OpenID+",请他开始选词")
+		ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 第"+strconv.Itoa(l+1)+"回合,画师为"+item.OpenID+",请他开始选词"))
 		UnderTime(10, room)
 		if len(room.Word) > 0 {
 			ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 选词完毕"))
@@ -460,9 +465,12 @@ func OneGame(room Room) {
 
 // 回合结束
 func RoundOver(room Room) {
+	ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 画家已画完"))
 	ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 本轮回合结束,正确答案"+room.Word))
 	ServerRoom(room, StrToJSON("room", "正确答案", room.Word))
+	ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 点赞开始"))
 	UnderTime(5, room)
+	ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 点赞结束"))
 }
 
 // 游戏结束

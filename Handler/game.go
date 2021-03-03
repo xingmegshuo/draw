@@ -282,11 +282,13 @@ func Leave(room Room, user string) {
 		room.User = append(room.User[:a], room.User[a+1:]...)
 	}
 	log.Println(len(room.User), "后来几个用户", "几个房间", len(PlayRoom))
-	UpdatePlayRoom(room)
-	RoomUser(room)
-	str := "{'status':'system','mes':'系统消息','data':{'message':'" + "房间公告:" + user + "退出房间'}}"
-	str = strings.Replace(str, "'", "\"", -1)
-	ServerRoom(room, str)
+	if len(room.User) >= 1 {
+		UpdatePlayRoom(room)
+		RoomUser(room)
+		str := "{'status':'system','mes':'系统消息','data':{'message':'" + "房间公告:" + user + "退出房间'}}"
+		str = strings.Replace(str, "'", "\"", -1)
+		ServerRoom(room, str)
+	}
 }
 
 // 房间内消息

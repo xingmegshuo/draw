@@ -423,6 +423,8 @@ func Choose(room Room, word string) {
 			SendMES(u.Ws, StrToJSON("room", "选择的词语", word))
 		}
 	}
+	ServerRoom(room, StrToJSON("room", "选词完毕状态", "ok"))
+
 }
 
 // 游戏流程

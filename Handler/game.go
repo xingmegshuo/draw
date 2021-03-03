@@ -427,6 +427,7 @@ func Choose(room Room, word string) {
 	}
 	ServerRoom(room, StrToJSON("room", "选词完毕状态", "ok"))
 	UpdatePlayRoom(room)
+	log.Println(room.Word, "-----------------词语")
 }
 
 // 游戏流程
@@ -439,9 +440,11 @@ func OneGame(room Room) {
 				ServerRoom(room, StrToJSON("room", "画家", item.OpenID))
 				ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 第"+strconv.Itoa(l+1)+"回合,画师为"+item.OpenID+",请他开始选词"))
 				UnderTime(10, room)
+				log.Println(room.Word, "-----------------词语")
 				if len(room.Word) == 0 {
 					Choose(room, "老虎")
 				}
+				log.Println(room.Word, "-----------------词语")
 				ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 选词完毕"))
 				RoundTime(60, room)
 				GuessPeople = len(room.User) - 1
@@ -496,7 +499,7 @@ func GameOver(room Room) {
 // 倒计时
 func UnderTime(count int, room Room) {
 	for i := 0; i < count; i++ {
-		ServerRoom(room, StrToJSON("system", "系统时间提示", "房间公告: 倒计时还有"+strconv.Itoa(count-i)+"秒"))
+		ServerRoom(room, StrToJSON("time", "系统时间提示", "房间公告: 倒计时还有"+strconv.Itoa(count-i)+"秒"))
 		ServerRoom(room, StrToJSON("room", "倒计时", strconv.Itoa(count-i)))
 		time.Sleep(time.Second * 1)
 	}
@@ -505,15 +508,15 @@ func UnderTime(count int, room Room) {
 // 回合倒计时
 func RoundTime(count int, room Room) {
 	for i := 0; i < count; i++ {
-		ServerRoom(room, StrToJSON("system", "系统时间提示", "房间公告: 倒计时还有"+strconv.Itoa(count-i)+"秒"))
+		ServerRoom(room, StrToJSON("time", "系统时间提示", "房间公告: 倒计时还有"+strconv.Itoa(count-i)+"秒"))
 		ServerRoom(room, StrToJSON("room", "倒计时", strconv.Itoa(count-i)))
 		time.Sleep(time.Second * 1)
-		ServerRoom(room, StrToJSON("room", "系统时间提示", "游戏提示: 两个字"))
+		ServerRoom(room, StrToJSON("room", "答案提示", "答案提示: 两个字"))
 		if i == 20 {
-			ServerRoom(room, StrToJSON("room", "系统时间提示", "游戏提示: 动物名称"))
+			ServerRoom(room, StrToJSON("room", "答案提示", "答案提示: 动物名称"))
 		}
 		if i == 40 {
-			ServerRoom(room, StrToJSON("room", "系统时间提示", "游戏提示: 山中猛虎"))
+			ServerRoom(room, StrToJSON("room", "答案提示", "答案提示: 山中猛虎"))
 		}
 
 	}

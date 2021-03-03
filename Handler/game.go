@@ -337,7 +337,7 @@ func Guess(room Room, user string, word string) {
 	str := ""
 	add := false
 	for l, item := range room.User {
-		if item.OpenID == user && room.Draw != user {
+		if item.OpenID == user && room.Draw != user && GuessPeople > 0 {
 			str = strings.Replace(word, room.Word, "**", -1)
 			if word == room.Word {
 				item.Score = item.Score + GuessPeople*2
@@ -457,7 +457,6 @@ func OneGame(room Room) {
 		if len(room.Word) == 0 {
 			Choose(room, "老虎")
 		}
-		log.Println(room.Word, "-----------------词语")
 		ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 选词完毕"))
 		RoundTime(60, room)
 		GuessPeople = len(room.User) - 1
@@ -479,6 +478,8 @@ func OneGame(room Room) {
 
 // 回合结束
 func RoundOver(room Room) {
+	room.Word = ""
+	UpdatePlayRoom(room)
 	ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 画家已画完"))
 	ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 本轮回合结束,正确答案"+room.Word))
 	ServerRoom(room, StrToJSON("room", "正确答案", room.Word))

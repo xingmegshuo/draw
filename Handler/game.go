@@ -446,7 +446,7 @@ func OneGame(room Room) {
 			RoundOver(room)
 		} else {
 			Choose(room, "老虎")
-			continue
+			// continue
 		}
 		if GuessPeople == 0 {
 			GuessPeople = len(room.User) - 1

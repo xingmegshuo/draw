@@ -265,9 +265,6 @@ func Ready(room Room, user string) {
 
 // 退出房间
 func Leave(room Room, user string) {
-	str := "{'status':'system','mes':'系统消息','data':{'message':'" + "房间公告:" + user + "退出房间'}}"
-	str = strings.Replace(str, "'", "\"", -1)
-	ServerRoom(room, str)
 	a := -1
 	for l, item := range room.User {
 		if item.OpenID == user {
@@ -285,6 +282,9 @@ func Leave(room Room, user string) {
 	}
 	RoomUser(room)
 	UpdatePlayRoom(room)
+	str := "{'status':'system','mes':'系统消息','data':{'message':'" + "房间公告:" + user + "退出房间'}}"
+	str = strings.Replace(str, "'", "\"", -1)
+	ServerRoom(room, str)
 }
 
 // 房间内消息
@@ -416,6 +416,7 @@ func Word(room Room, user string) {
 
 // 选词
 func Choose(room Room, word string) {
+	log.Println(word, "选择的词语")
 	room.Word = word
 	UpdatePlayRoom(room)
 	for _, u := range room.User {
@@ -474,7 +475,7 @@ func RoundOver(room Room) {
 // 游戏结束
 func GameOver(room Room) {
 	ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 游戏结束"))
-	str := "{'status':'room','mes':'游戏结束信息','data':["
+	str := "["
 	for l, item := range room.User {
 		Ready(room, item.OpenID)
 		if l == len(room.User)-1 {
@@ -483,8 +484,7 @@ func GameOver(room Room) {
 			str = str + "{'user':'" + item.OpenID + "','score':'" + strconv.Itoa(item.Score) + "'},"
 		}
 	}
-	str = str + "]}"
-	str = strings.Replace(str, "'", "\"", -1)
+	str = str + "]"
 	ServerRoom(room, StrToJSON("room", "游戏结算", str))
 	if len(room.User) != 6 {
 		room.Status = true

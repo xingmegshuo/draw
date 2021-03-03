@@ -320,11 +320,11 @@ func RoomSocket(mes []byte) {
 	case "choose":
 		log.Println("选词----------------", room.Owner, Msg.Data)
 		str := strings.Replace(Msg.Data, "\"", "", -1)
-		log.Println(str)
-		Choose(room, Msg.Data)
+		Choose(room, str)
 	case "guess":
 		log.Println("猜词---------------", room.Word)
-		Guess(room, Msg.User, Msg.Data)
+		str := strings.Replace(Msg.Data, "\"", "", -1)
+		Guess(room, Msg.User, str)
 	}
 }
 

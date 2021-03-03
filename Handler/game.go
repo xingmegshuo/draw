@@ -433,21 +433,19 @@ func OneGame(room Room) {
 		ServerRoom(room, StrToJSON("room", "画家", item.OpenID))
 		ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 第"+strconv.Itoa(l+1)+"回合,画师为"+item.OpenID+",请他开始选词"))
 		UnderTime(10, room)
-		if len(room.Word) > 0 {
-			ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 选词完毕"))
-			time.Sleep(time.Second * 1)
-			ServerRoom(room, StrToJSON("room", "游戏提示信息", "游戏提示: 两个字"))
-			UnderTime(5, room)
-			ServerRoom(room, StrToJSON("room", "游戏提示信息", "游戏提示: 动物名称"))
-			UnderTime(5, room)
-			ServerRoom(room, StrToJSON("room", "游戏提示信息", "游戏提示: 山中猛虎"))
-			UnderTime(10, room)
-			GuessPeople = len(room.User) - 1
-			RoundOver(room)
-		} else {
+		if len(room.Word) == 0 {
 			Choose(room, "老虎")
-			// continue
 		}
+		ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 选词完毕"))
+		time.Sleep(time.Second * 1)
+		ServerRoom(room, StrToJSON("room", "游戏提示信息", "游戏提示: 两个字"))
+		UnderTime(5, room)
+		ServerRoom(room, StrToJSON("room", "游戏提示信息", "游戏提示: 动物名称"))
+		UnderTime(5, room)
+		ServerRoom(room, StrToJSON("room", "游戏提示信息", "游戏提示: 山中猛虎"))
+		UnderTime(10, room)
+		GuessPeople = len(room.User) - 1
+		RoundOver(room)
 		if GuessPeople == 0 {
 			GuessPeople = len(room.User) - 1
 			RoundOver(room)

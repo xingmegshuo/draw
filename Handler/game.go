@@ -162,6 +162,7 @@ func Init(ws *websocket.Conn, room Room) string {
 	// 加入房间自动准备
 	Ready(room, userID)
 	RoomUser(room)
+	UpdatePlayRoom(room)
 	return GetRoomID(room)
 }
 
@@ -233,7 +234,7 @@ func UpdatePlayRoom(room Room) {
 		if item.Owner == room.Owner {
 			PlayRoom[l] = room
 		}
-		if item.People == 6 {
+		if item.People == 6 || len(item.User) == 0 {
 			log.Println("删除房间-----------")
 			delete(PlayRoom, l)
 		}

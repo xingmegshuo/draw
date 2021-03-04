@@ -47,7 +47,6 @@ type GameType struct {
 	RoomID string
 }
 
-
 var GuessPeople int
 
 // 是否新建房间的数据解析
@@ -181,9 +180,17 @@ func RoomUser(room Room) {
 	str := "{'status':'room','mes':'房间成员信息','data':["
 	for l, item := range room.User {
 		if l == len(room.User)-1 {
-			str = str + "{'user':'" + item.OpenID + "','ready':'" + item.Ready + "','onLine':'" + item.Status + "'}"
+			if item.OpenID == room.Owner {
+				str = str + "{'user':'" + item.OpenID + "','ready':'" + item.Ready + "','homeowner':'" + item.OpenID + "'}"
+			} else {
+				str = str + "{'user':'" + item.OpenID + "','ready':'" + item.Ready + "'}"
+			}
 		} else {
-			str = str + "{'user':'" + item.OpenID + "','ready':'" + item.Ready + "','onLine':'" + item.Status + "'},"
+			if item.OpenID == room.Owner {
+				str = str + "{'user':'" + item.OpenID + "','ready':'" + item.Ready + "','homeowner':'" + item.OpenID + "'},"
+			} else {
+				str = str + "{'user':'" + item.OpenID + "'},"
+			}
 		}
 	}
 	str = str + "]}"
@@ -275,6 +282,7 @@ func Leave(room Room, user string) {
 		}
 		if room.Owner == user && len(room.User) > 0 {
 			room.Owner = room.User[0].OpenID
+			RoomUser(room)
 		}
 	}
 	if a != -1 {
@@ -523,7 +531,7 @@ func RoundTime(count int, room Room) {
 		ServerRoom(room, StrToJSON("time", "系统时间提示", "房间公告: 倒计时还有"+strconv.Itoa(count-i)+"秒"))
 		ServerRoom(room, StrToJSON("room", "倒计时", strconv.Itoa(count-i)))
 		time.Sleep(time.Second * 1)
-		if i==0{
+		if i == 0 {
 			ServerRoom(room, StrToJSON("room", "答案提示", "答案提示: 两个字"))
 		}
 		if i == 20 {

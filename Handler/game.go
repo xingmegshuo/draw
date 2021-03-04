@@ -354,6 +354,9 @@ func Guess(room Room, user string, word string) {
 		} else {
 			str = strings.Replace(word, room.Word, "**", -1)
 		}
+		room.User[l] = item
+	}
+	for l, item := range room.User {
 		if item.OpenID == room.Draw && add == true {
 			item.Score = item.Score + 2
 		}
@@ -503,9 +506,12 @@ func GameOver(room Room) {
 		Ready(room, item.OpenID)
 		if l == len(room.User)-1 {
 			str = str + "{'user':'" + item.OpenID + ",'score':'" + strconv.Itoa(item.Score) + "'}"
+			item.Score = 0
 		} else {
 			str = str + "{'user':'" + item.OpenID + "','score':'" + strconv.Itoa(item.Score) + "'},"
+			item.Score = 0
 		}
+		room.User[l] = item
 	}
 	str = str + "]"
 	ServerRoom(room, StrToJSON("room", "游戏结算", str))

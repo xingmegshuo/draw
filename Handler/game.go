@@ -473,9 +473,11 @@ func OneGame(room Room) {
 		RoundTime(60, room)
 		GuessPeople = len(room.User) - 1
 		RoundOver(room)
+		room.Word = ""
 		if GuessPeople == 0 {
 			GuessPeople = len(room.User) - 1
 			RoundOver(room)
+			room.Word = ""
 			continue
 		}
 		if len(room.User) < 2 {
@@ -493,8 +495,6 @@ func RoundOver(room Room) {
 	ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 画家已画完"))
 	ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 本轮回合结束,正确答案"+room.Word))
 	ServerRoom(room, StrToJSON("room", "正确答案", room.Word))
-	room.Word = ""
-	UpdatePlayRoom(room)
 	ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 点赞开始"))
 	UnderTime(5, room)
 	ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 点赞结束"))

@@ -24,14 +24,17 @@ type Data struct {
 var client_user = make(map[*websocket.Conn]string)
 var client_palyer = make(map[*websocket.Conn]string)
 
+// 房间
+var PlayRoom = make(map[string]Room)
+
 // var client_buddy = make(map[*websocket.Conn]string)
 
 // 解析key
-func ParseData(con string, ws *websocket.Conn, clientMap map[*websocket.Conn]string) {
+func ParseData(con string, ws *websocket.Conn) {
 	// log.Println("开始解析", con)
 	var data Data
 	// 清除连接
-	Clear(clientMap)
+	// Clear(clientMap)
 	oldData := []byte(con)
 	err := json.Unmarshal(oldData, &data)
 	if err != nil {
@@ -113,6 +116,7 @@ func CloseUser(ws *websocket.Conn) {
 	delete(client_palyer, ws)
 	ws.Close()
 	log.Println(len(client_user), len(client_palyer), "现有的链接数量")
+	RemoveRoom()
 }
 
 // 数据返回
@@ -123,12 +127,26 @@ func Send(ws *websocket.Conn, mes string) {
 	}
 }
 
-// 清除连接
-func Clear(clientMap map[*websocket.Conn]string) {
-	for ws, _ := range client_user {
-		if _, ok := clientMap[ws]; !ok {
-			log.Println("清除无效链接")
-			CloseUser(ws)
+// // 清除连接
+// func Clear(clientMap map[*websocket.Conn]string) {
+// 	for ws, _ := range client_palyer {
+// 		if _, ok := clientMap[ws]; !ok {
+// 			log.Println("清除无效链接")
+// 			CloseUser(ws)
+// 		}
+// 	}
+// }
+
+// 移除房间的人
+func RemoveRoom() {
+	for _, ro := range PlayRoom {
+		for _, user := range ro.User {
+			if _, ok := client_palyer[user.Ws]; ok {
+				log.Println("正常---", user.OpenID)
+			} else {
+				log.Println("此用户断开链接", user.OpenID)
+				Leave(ro, user.OpenID)
+			}
 		}
 	}
 }

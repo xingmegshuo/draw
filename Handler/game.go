@@ -47,8 +47,7 @@ type GameType struct {
 	RoomID string
 }
 
-// 房间
-var PlayRoom = make(map[string]Room)
+
 var GuessPeople int
 
 // 是否新建房间的数据解析
@@ -454,7 +453,7 @@ func OneGame(room Room) {
 		ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 第"+strconv.Itoa(l+1)+"回合,画师为"+item.OpenID+",请他开始选词"))
 		UnderTime(10, room)
 		room = GetRoom(room)
-		if len(room.Word) == 0 {
+		if room.Word == "" {
 			Choose(room, "老虎")
 		}
 		ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 选词完毕"))
@@ -478,11 +477,11 @@ func OneGame(room Room) {
 
 // 回合结束
 func RoundOver(room Room) {
-	room.Word = ""
-	UpdatePlayRoom(room)
 	ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 画家已画完"))
 	ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 本轮回合结束,正确答案"+room.Word))
 	ServerRoom(room, StrToJSON("room", "正确答案", room.Word))
+	room.Word = ""
+	UpdatePlayRoom(room)
 	ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 点赞开始"))
 	UnderTime(5, room)
 	ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 点赞结束"))
@@ -524,7 +523,9 @@ func RoundTime(count int, room Room) {
 		ServerRoom(room, StrToJSON("time", "系统时间提示", "房间公告: 倒计时还有"+strconv.Itoa(count-i)+"秒"))
 		ServerRoom(room, StrToJSON("room", "倒计时", strconv.Itoa(count-i)))
 		time.Sleep(time.Second * 1)
-		ServerRoom(room, StrToJSON("room", "答案提示", "答案提示: 两个字"))
+		if i==0{
+			ServerRoom(room, StrToJSON("room", "答案提示", "答案提示: 两个字"))
+		}
 		if i == 20 {
 			ServerRoom(room, StrToJSON("room", "答案提示", "答案提示: 动物名称"))
 		}

@@ -73,12 +73,13 @@ func ParseConn(ws *websocket.Conn) {
 		}
 		// log.Printf("用户发送了: %v\n", string(reply))
 		// 发送给解析函数
-		go Handler.ParseData(string(reply), ws, client_map)
+		go Handler.ParseData(string(reply), ws)
 	}
 }
 
 // 断开连接
 func CloseConn(ws *websocket.Conn) {
 	delete(client_map, ws)
+	Handler.CloseUser(ws)
 	ws.Close()
 }

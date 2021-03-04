@@ -11,6 +11,7 @@ package Handler
 import (
 	"encoding/json"
 	"log"
+	"strings"
 
 	"golang.org/x/net/websocket"
 )
@@ -139,14 +140,30 @@ func Send(ws *websocket.Conn, mes string) {
 
 // 移除房间的人
 func RemoveRoom() {
-	for _, ro := range PlayRoom {
-		for _, user := range ro.User {
+	for i, ro := range PlayRoom {
+		a := -1
+		openID := ""
+		for l, user := range ro.User {
 			if _, ok := client_palyer[user.Ws]; ok {
 				log.Println("正常---", user.OpenID)
 			} else {
 				log.Println("此用户断开链接", user.OpenID)
-				Leave(ro, user.OpenID)
+				a = l
+				openID = user.OpenID
+				ro.People = ro.People + 1
 			}
 		}
+		if a != -1 {
+			ro.User = append(ro.User[:a], ro.User[a+1:]...)
+		}
+		if len(ro.User) > 0 {
+			RoomUser(ro)
+			str := "{'status':'system','mes':'系统消息','data':{'message':'" + "房间公告:" + openID + "退出房间'}}"
+			str = strings.Replace(str, "'", "\"", -1)
+			ServerRoom(ro, str)
+		} else {
+			delete(PlayRoom, i)
+		}
+		PlayRoom[i] = ro
 	}
 }

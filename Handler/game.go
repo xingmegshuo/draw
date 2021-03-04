@@ -311,7 +311,6 @@ func RoomSocket(mes []byte) {
 			room = item
 		}
 	}
-	GuessPeople = len(room.User) - 1
 	switch Msg.Message {
 	case "ready":
 		Ready(room, Msg.User)
@@ -455,6 +454,7 @@ func GetRoom(room Room) Room {
 // 游戏流程
 func OneGame(room Room) {
 	for l, item := range room.User {
+		GuessPeople = len(room.User) - 1
 		room.Draw = item.OpenID
 		UpdatePlayRoom(room)
 		ServerRoom(room, StrToJSON("room", "画家", item.OpenID))

@@ -11,7 +11,6 @@ package Handler
 import (
 	"encoding/json"
 	"log"
-	"strings"
 
 	"golang.org/x/net/websocket"
 )
@@ -141,30 +140,44 @@ func Send(ws *websocket.Conn, mes string) {
 // 移除房间的人
 func RemoveRoom() {
 	for i, ro := range PlayRoom {
-		a := -1
-		openID := ""
-		for l, user := range ro.User {
-			if _, ok := client_palyer[user.Ws]; ok {
-				log.Println("正常---", user.OpenID)
-			} else {
-				log.Println("此用户断开链接", user.OpenID)
-				a = l
-				openID = user.OpenID
-				ro.People = ro.People + 1
+		for {
+			l := IsUser(ro)
+			if l == -1 {
+				break
 			}
-			if a != -1 {
-				ro.User = append(ro.User[:a], ro.User[a+1:]...)
-			}
+			ro = DeleteUser(ro, l)
 		}
 		log.Println("还有几个人", len(ro.User))
 		if len(ro.User) > 0 {
 			RoomUser(ro)
-			str := "{'status':'system','mes':'系统消息','data':{'message':'" + "房间公告:" + openID + "退出房间'}}"
-			str = strings.Replace(str, "'", "\"", -1)
-			ServerRoom(ro, str)
+			// str := "{'status':'system','mes':'系统消息','data':{'message':'" + "房间公告:" + openID + "退出房间'}}"
+			// str = strings.Replace(str, "'", "\"", -1)
+			// ServerRoom(ro, str)
 		} else {
 			delete(PlayRoom, i)
 		}
 		PlayRoom[i] = ro
 	}
+}
+
+// 移除无效用户
+func DeleteUser(room Room, l int) Room {
+	if l != -1 {
+		room.User = append(room.User[:l], room.User[l+1:]...)
+	}
+	return room
+}
+
+// 是否有无效用户
+func IsUser(room Room) int {
+	for l, user := range room.User {
+		if _, ok := client_palyer[user.Ws]; ok {
+			log.Println("正常---", user.OpenID)
+		} else {
+			log.Println("此用户断开链接", user.OpenID)
+			room.People = room.People + 1
+			return l
+		}
+	}
+	return -1
 }

@@ -464,6 +464,7 @@ func OneGame(room Room) {
 		ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 第"+strconv.Itoa(l+1)+"回合,画师为"+item.OpenID+",请他开始选词"))
 		UnderTime(10, room)
 		room = GetRoom(room)
+		log.Print(room.Word, "------------shige sha ")
 		if room.Word == "" {
 			Choose(room, "老虎")
 		}

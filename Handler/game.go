@@ -224,7 +224,7 @@ func SendMES(ws *websocket.Conn, mes string) {
 	if err := websocket.Message.Send(ws, mes); err != nil {
 		log.Println("用户离线", err.Error())
 		ws.Close()
-		OutLine(ws)
+		CloseUser(ws)
 	}
 }
 
@@ -465,6 +465,7 @@ func OneGame(room Room) {
 		UnderTime(10, room)
 		room = GetRoom(room)
 		log.Print(room.Word, "------------shige sha ")
+		time.Sleep(time.Second * 1)
 		if room.Word == "" {
 			Choose(room, "老虎")
 		}

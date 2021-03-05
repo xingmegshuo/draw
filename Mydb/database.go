@@ -33,7 +33,7 @@ func SetEngin(db string) *xorm.Engine {
 		log.Panic(err)
 	}
 	// 同步数据表
-	this_err := orm.Sync2(new(User), new(Buddy), new(Record))
+	this_err := orm.Sync2(new(User), new(Buddy), new(Record), new(GuessAnswer))
 	if this_err != nil {
 		log.Panic("Fail to sync database:", this_err)
 	}
@@ -68,4 +68,10 @@ func NewBuddyCtrl() *Buddy {
 func NewRecordCtrl() *Record {
 	Init()
 	return &Record{}
+}
+
+// 谜底管理器
+func NewGuessAnswerCtrl() *GuessAnswer {
+	Init()
+	return &GuessAnswer{}
 }

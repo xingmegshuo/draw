@@ -158,7 +158,7 @@ func RemoveRoom() {
 			delete(PlayRoom, i)
 		}
 		if len(client_palyer) == 0 {
-			delte(PlayRoom, i)
+			delete(PlayRoom, i)
 		}
 	}
 }

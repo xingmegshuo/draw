@@ -203,7 +203,7 @@ func RoomUser(room Room) {
 func ServerRoom(room Room, mes string) {
 	for _, item := range room.User {
 		if item.Status != "false" {
-			SendMES(item.Ws, mes)
+			Send(item.Ws, mes)
 		}
 	}
 }
@@ -221,12 +221,12 @@ func OutLine(ws *websocket.Conn) {
 }
 
 // 发消息
-func SendMES(ws *websocket.Conn, mes string) {
-	if err := websocket.Message.Send(ws, mes); err != nil {
-		log.Println("用户离线", err.Error())
-		// CloseUser(ws)
-	}
-}
+// func SendMES(ws *websocket.Conn, mes string) {
+// 	if err := websocket.Message.Send(ws, mes); err != nil {
+// 		log.Println("用户离线", err.Error())
+// 		// CloseUser(ws)
+// 	}
+// }
 
 // 更新房间到房间列表
 func UpdatePlayRoom(room Room) {
@@ -442,7 +442,7 @@ func Word(room Room, user string) {
 	str = strings.Replace(str, "'", "\"", -1)
 	for _, item := range room.User {
 		if item.OpenID == user && room.Draw == user {
-			SendMES(item.Ws, str)
+			Send(item.Ws, str)
 		}
 	}
 }
@@ -453,7 +453,7 @@ func Choose(room Room, word string) {
 	UpdatePlayRoom(room)
 	for _, u := range room.User {
 		if u.OpenID == room.Draw {
-			SendMES(u.Ws, StrToJSON("room", "选择的词语", word))
+			Send(u.Ws, StrToJSON("room", "选择的词语", word))
 		}
 	}
 	ServerRoom(room, StrToJSON("room", "选词完毕状态", "ok"))

@@ -404,7 +404,6 @@ func Start(room Room, user string) {
 	}
 	if room.Owner == user && a >= 1 && room.People <= 4 {
 		ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 游戏五秒后开始"))
-
 		UnderTime(5, room)
 		status := IsStart(room)
 		if status {
@@ -417,6 +416,7 @@ func Start(room Room, user string) {
 		}
 	} else {
 		ServerRoom(room, StrToJSON("room", "房间状态", "GameError"))
+		ServerRoom(room, StrToJSON("room", "房间状态", "CountdownError"))
 		ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 房间准备人数不足,请玩家准备"))
 	}
 }
@@ -532,6 +532,7 @@ func GameOver(room Room) {
 
 // 倒计时
 func UnderTime(count int, room Room) {
+	ServerRoom(room, StrToJSON("room", "房间状态", "CountdownSuccess"))
 	for i := 0; i < count; i++ {
 		ServerRoom(room, StrToJSON("time", "系统时间提示", "房间公告: 倒计时还有"+strconv.Itoa(count-i)+"秒"))
 		ServerRoom(room, StrToJSON("room", "倒计时", strconv.Itoa(count-i)))
@@ -541,6 +542,7 @@ func UnderTime(count int, room Room) {
 
 // 回合倒计时
 func RoundTime(count int, room Room) {
+	ServerRoom(room, StrToJSON("room", "房间状态", "CountdownSuccess"))
 	for i := 0; i < count; i++ {
 		ServerRoom(room, StrToJSON("time", "系统时间提示", "房间公告: 倒计时还有"+strconv.Itoa(count-i)+"秒"))
 		ServerRoom(room, StrToJSON("room", "倒计时", strconv.Itoa(count-i)))

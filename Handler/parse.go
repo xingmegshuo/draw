@@ -152,7 +152,7 @@ func RemoveRoom() {
 			delete(PlayRoom, i)
 		} else {
 			if len(ro.User) > 1 {
-				RoomUser(ro)
+				// RoomUser(ro)
 				// str := "{'status':'system','mes':'系统消息','data':{'message':'" + "房间公告:" + openID + "退出房间'}}"
 				// str = strings.Replace(str, "'", "\"", -1)
 				// ServerRoom(ro, str)

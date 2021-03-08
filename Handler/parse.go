@@ -140,17 +140,17 @@ func Send(ws *websocket.Conn, mes string) {
 // 移除房间的人
 func RemoveRoom() {
 	for i, ro := range PlayRoom {
-		for {
-			l := IsUser(ro)
-			if l == -1 {
-				break
-			}
-			ro = DeleteUser(ro, l)
-		}
-		log.Println("还有几个人", len(ro.User))
 		if len(client_palyer) == 0 {
 			delete(PlayRoom, i)
 		} else {
+			for {
+				l := IsUser(ro)
+				if l == -1 {
+					break
+				}
+				ro = DeleteUser(ro, l)
+			}
+			log.Println("还有几个人", len(ro.User))
 			if len(ro.User) > 1 {
 				RoomUser(ro)
 				// str := "{'status':'system','mes':'系统消息','data':{'message':'" + "房间公告:" + openID + "退出房间'}}"

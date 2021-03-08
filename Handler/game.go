@@ -394,6 +394,24 @@ func IsStart(room Room) bool {
 	return true
 }
 
+// 倒计时
+func IsStartUnderTime(count int, room Room, mes string) bool {
+	ServerRoom(room, StrToJSON("room", "房间状态", mes))
+	for i := 0; i < count; i++ {
+		ServerRoom(room, StrToJSON("time", "系统时间提示", "房间公告: 倒计时还有"+strconv.Itoa(count-i)+"秒"))
+		ServerRoom(room, StrToJSON("room", "倒计时", strconv.Itoa(count-i)))
+		b := IsStart(room)
+		if b == false {
+			ServerRoom(room, StrToJSON("room", "房间状态", "CountdownStop"))
+			ServerRoom(room, StrToJSON("room", "房间状态", "GameError"))
+			ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 用户取消准备,游戏未能开始"))
+			return false
+		}
+		time.Sleep(time.Second * 1)
+	}
+	return true
+}
+
 // 开始游戏
 func Start(room Room, user string) {
 	a := 0
@@ -404,15 +422,11 @@ func Start(room Room, user string) {
 	}
 	if room.Owner == user && a >= 1 && room.People <= 4 {
 		ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 游戏五秒后开始"))
-		UnderTime(5, room, "GameCountdown")
-		status := IsStart(room)
+		status := IsStartUnderTime(5, room, "GameCountdown")
 		if status {
 			ServerRoom(room, StrToJSON("room", "房间状态", "GameSuccess"))
 			ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 游戏正式开始"))
 			OneGame(room)
-		} else {
-			ServerRoom(room, StrToJSON("room", "房间状态", "GameError"))
-			ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 用户取消准备,游戏未能开始"))
 		}
 	} else {
 		ServerRoom(room, StrToJSON("room", "房间状态", "CountdownError"))
@@ -458,6 +472,23 @@ func GetRoom(room Room) Room {
 	return ro
 }
 
+// 选词倒计时
+func ChooseWordUnderTime(count int, room Room, mes string) bool {
+	ServerRoom(room, StrToJSON("room", "房间状态", mes))
+	for i := 0; i < count; i++ {
+		ServerRoom(room, StrToJSON("time", "系统时间提示", "房间公告: 倒计时还有"+strconv.Itoa(count-i)+"秒"))
+		ServerRoom(room, StrToJSON("room", "倒计时", strconv.Itoa(count-i)))
+		ro := GetRoom(room)
+		if ro.Word != "" {
+			ServerRoom(room, StrToJSON("room", "房间状态", "CountdownStop"))
+			ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 选词完毕"))
+			return true
+		}
+		time.Sleep(time.Second * 1)
+	}
+	return false
+}
+
 // 游戏流程
 func OneGame(room Room) {
 	for l, item := range room.User {
@@ -466,14 +497,12 @@ func OneGame(room Room) {
 		UpdatePlayRoom(room)
 		ServerRoom(room, StrToJSON("room", "画家", item.OpenID))
 		ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 第"+strconv.Itoa(l+1)+"回合,画师为"+item.OpenID+",请他开始选词"))
-		UnderTime(10, room, "ChooseWordCountdown")
+		w := ChooseWordUnderTime(10, room, "ChooseWordCountdown")
 		room = GetRoom(room)
-		log.Print(room.Word, "------------shige sha ")
-		time.Sleep(time.Second * 1)
-		if room.Word == "" {
+		if w == false {
 			Choose(room, "老虎")
+			ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 选词完毕"))
 		}
-		ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 选词完毕"))
 		RoundTime(60, room)
 		GuessPeople = len(room.User) - 1
 		RoundOver(room)

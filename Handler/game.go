@@ -404,15 +404,19 @@ func Start(room Room, user string) {
 	}
 	if room.Owner == user && a >= 1 && room.People <= 4 {
 		ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 游戏五秒后开始"))
+
 		UnderTime(5, room)
 		status := IsStart(room)
 		if status {
+			ServerRoom(room, StrToJSON("room", "房间状态", "GameSuccess"))
 			ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 游戏正式开始"))
 			OneGame(room)
 		} else {
+			ServerRoom(room, StrToJSON("room", "房间状态", "GameError"))
 			ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 用户取消准备,游戏未能开始"))
 		}
 	} else {
+		ServerRoom(room, StrToJSON("room", "房间状态", "GameError"))
 		ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 房间准备人数不足,请玩家准备"))
 	}
 }
@@ -496,6 +500,7 @@ func RoundOver(room Room) {
 	ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 本轮回合结束,正确答案"+room.Word))
 	ServerRoom(room, StrToJSON("room", "正确答案", room.Word))
 	ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 点赞开始"))
+	ServerRoom(room, StrToJSON("room", "房间状态", "RoundOver"))
 	UnderTime(5, room)
 	ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 点赞结束"))
 }
@@ -503,6 +508,7 @@ func RoundOver(room Room) {
 // 游戏结束
 func GameOver(room Room) {
 	ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 游戏结束"))
+	ServerRoom(room, StrToJSON("room", "房间状态", "GameOver"))
 	str := "["
 	for l, item := range room.User {
 		Ready(room, item.OpenID)

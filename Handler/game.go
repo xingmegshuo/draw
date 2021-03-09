@@ -606,6 +606,7 @@ func UnderTime(count int, room Room, mes string) {
 		ServerRoom(room, StrToJSON("room", "倒计时", strconv.Itoa(count-i)))
 		time.Sleep(time.Second * 1)
 	}
+	ServerRoom(room, StrToJSON("room", "房间状态", "CountdownStop"))
 }
 
 // 回合倒计时
@@ -626,6 +627,7 @@ func RoundTime(count int, room Room) {
 		}
 
 	}
+	ServerRoom(room, StrToJSON("room", "房间状态", "CountdownStop"))
 }
 
 // 获取提示

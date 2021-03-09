@@ -81,6 +81,5 @@ func ParseConn(ws *websocket.Conn) {
 func CloseConn(ws *websocket.Conn) {
 	delete(client_map, ws)
 	Handler.CloseUser(ws)
-	log.Println(len(client_map), "断开链接的是谁")
 	// ws.Close()
 }

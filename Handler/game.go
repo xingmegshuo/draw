@@ -189,7 +189,6 @@ func RoomUser(room Room) {
 		}
 		user, _ := ctrl.GetUser(thisUser)
 		if l == len(room.User)-1 {
-
 			if item.OpenID == room.Owner {
 				str = str + "{'user':'" + item.OpenID + "','nickName':'" + user.NickName + "','avatarUrl':'" + user.AvatarURL + "','ready':'" + item.Ready + "','homeowner':'" + item.OpenID + "'}"
 			} else {
@@ -449,9 +448,9 @@ func Start(room Room, user string) {
 func Word(room Room, user string) {
 	str := "{'status':'room','mes':'词语','data':'["
 	for i := 0; i < 3; i++ {
-		str = str + GetWord() + ","
+		str = str + "'" + GetWord() + "',"
 	}
-	str = str + GetWord() + "]'}"
+	str = str + "'" + GetWord() + "']'}"
 	str = strings.Replace(str, "'", "\"", -1)
 	for _, item := range room.User {
 		if item.OpenID == user && room.Draw == user {

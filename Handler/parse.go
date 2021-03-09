@@ -114,7 +114,7 @@ func ParseData(con string, ws *websocket.Conn) {
 func CloseUser(ws *websocket.Conn) {
 	delete(client_user, ws)
 	delete(client_palyer, ws)
-	log.Println(len(client_user), len(client_palyer), "现有的链接数量")
+	// log.Println(len(client_user), len(client_palyer), "现有的链接数量")
 	RemoveRoom()
 }
 

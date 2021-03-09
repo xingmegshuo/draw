@@ -113,10 +113,12 @@ func ParseData(con string, ws *websocket.Conn) {
 // 关闭连接时退出用户
 func CloseUser(ws *websocket.Conn) {
 	log.Println("断开链接的是谁", client_palyer[ws])
-	delete(client_user, ws)
-	delete(client_palyer, ws)
-	// log.Println(len(client_user), len(client_palyer), "现有的链接数量")
-	RemoveRoom()
+	if len(client_palyer[ws]) > 0 {
+		delete(client_user, ws)
+		delete(client_palyer, ws)
+		// log.Println(len(client_user), len(client_palyer), "现有的链接数量")
+		RemoveRoom()
+	}
 }
 
 // 数据返回

@@ -535,11 +535,11 @@ func OneGame(room Room) {
 		ServerRoom(room, StrToJSON("room", "画家", item.OpenID))
 		ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 第"+strconv.Itoa(l+1)+"回合,画师为"+item.OpenID+",请他开始选词"))
 		w := ChooseWordUnderTime(10, room, "ChooseWordCountdown")
-		room = GetRoom(room)
 		if w == false {
 			Choose(room, GetWord())
 			ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 选词完毕"))
 		}
+		room = GetRoom(room)
 		RoundTime(30, room)
 		GuessPeople = len(room.User) - 1
 		RoundOver(room)
@@ -565,6 +565,7 @@ func RoundOver(room Room) {
 	ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 画家已画完"))
 	ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 本轮回合结束,正确答案"+room.Word))
 	ServerRoom(room, StrToJSON("room", "正确答案", room.Word))
+	log.Println("回合结束正确答案:", room.Word)
 	ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 点赞开始"))
 	ServerRoom(room, StrToJSON("room", "房间状态", "RoundOver"))
 	UnderTime(5, room, "RoundCountdown")
@@ -579,7 +580,7 @@ func GameOver(room Room) {
 	for l, item := range room.User {
 		Ready(room, item.OpenID)
 		if l == len(room.User)-1 {
-			str = str + "{'user':'" + item.OpenID + ",'score':'" + strconv.Itoa(item.Score) + "'}"
+			str = str + "{'user':'" + item.OpenID + "','score':'" + strconv.Itoa(item.Score) + "'}"
 			item.Score = 0
 		} else {
 			str = str + "{'user':'" + item.OpenID + "','score':'" + strconv.Itoa(item.Score) + "'},"

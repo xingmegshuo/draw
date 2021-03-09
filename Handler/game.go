@@ -540,7 +540,7 @@ func OneGame(room Room) {
 			Choose(room, GetWord())
 			ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 选词完毕"))
 		}
-		RoundTime(60, room)
+		RoundTime(30, room)
 		GuessPeople = len(room.User) - 1
 		RoundOver(room)
 		room.Word = ""
@@ -616,10 +616,10 @@ func RoundTime(count int, room Room) {
 		if i == 0 {
 			ServerRoom(room, StrToJSON("room", "答案提示", "答案提示: "+GetWordMess("first", room.Word)))
 		}
-		if i == 20 {
+		if i == 10 {
 			ServerRoom(room, StrToJSON("room", "答案提示", "答案提示: "+GetWordMess("second", room.Word)))
 		}
-		if i == 40 {
+		if i == 20 {
 			ServerRoom(room, StrToJSON("room", "答案提示", "答案提示: "+GetWordMess("third", room.Word)))
 		}
 

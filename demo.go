@@ -9,20 +9,16 @@
 package main
 
 import (
-	"draw/Mydb"
+	"crypto/rand"
 	"fmt"
-	"math/rand"
-	"time"
+	"math/big"
+	"reflect"
 )
 
 func main() {
-	ctrl := Mydb.NewGuessAnswerCtrl()
-	SearchWord := Mydb.GuessAnswer{
-		Id: 0,
+	for i := 0; i < 3; i++ {
+		result, _ := rand.Int(rand.Reader, big.NewInt(20))
+		// result = int(result)
+		fmt.Println(reflect.TypeOf(int(result.Int64())), result)
 	}
-	words := ctrl.GetAnswer(SearchWord)
-
-	rand.Seed(time.Now().Unix())
-	j := rand.Intn(len(words))
-	fmt.Println(words[j].Answer)
 }

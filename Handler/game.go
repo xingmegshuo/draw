@@ -9,10 +9,11 @@
 package Handler
 
 import (
+	"crypto/rand"
 	"draw/Mydb"
 	"encoding/json"
 	"log"
-	"math/rand"
+	"math/big"
 	"strconv"
 	"strings"
 	"time"
@@ -180,19 +181,25 @@ func GetRoomID(room Room) string {
 
 // 发送房间成员和状态
 func RoomUser(room Room) {
+	ctrl := Mydb.NewUserCtrl()
 	str := "{'status':'room','mes':'房间成员信息','data':["
 	for l, item := range room.User {
+		thisUser := Mydb.User{
+			OpenID: item.OpenID,
+		}
+		user, _ := ctrl.GetUser(thisUser)
 		if l == len(room.User)-1 {
+
 			if item.OpenID == room.Owner {
-				str = str + "{'user':'" + item.OpenID + "','ready':'" + item.Ready + "','homeowner':'" + item.OpenID + "'}"
+				str = str + "{'user':'" + item.OpenID + "','nickName':'" + user.NickName + "','avatarUrl':'" + user.AvatarURL + "','ready':'" + item.Ready + "','homeowner':'" + item.OpenID + "'}"
 			} else {
-				str = str + "{'user':'" + item.OpenID + "','ready':'" + item.Ready + "'}"
+				str = str + "{'user':'" + item.OpenID + "','nickName':'" + user.NickName + "','avatarUrl':'" + user.AvatarURL + "','ready':'" + item.Ready + "'}"
 			}
 		} else {
 			if item.OpenID == room.Owner {
-				str = str + "{'user':'" + item.OpenID + "','ready':'" + item.Ready + "','homeowner':'" + item.OpenID + "'},"
+				str = str + "{'user':'" + item.OpenID + "','nickName':'" + user.NickName + "','avatarUrl':'" + user.AvatarURL + "','ready':'" + item.Ready + "','homeowner':'" + item.OpenID + "'},"
 			} else {
-				str = str + "{'user':'" + item.OpenID + "'},"
+				str = str + "{'user':'" + item.OpenID + "','nickName':'" + user.NickName + "','avatarUrl':'" + user.AvatarURL + "'},"
 			}
 		}
 	}
@@ -440,11 +447,11 @@ func Start(room Room, user string) {
 
 // 随机生成四个词
 func Word(room Room, user string) {
-	str := "{'status':'room','mes':'词语','data':["
+	str := "{'status':'room','mes':'词语','data':'["
 	for i := 0; i < 3; i++ {
 		str = str + GetWord() + ","
 	}
-	str = str + GetWord() + "]}"
+	str = str + GetWord() + "]'}"
 	str = strings.Replace(str, "'", "\"", -1)
 	for _, item := range room.User {
 		if item.OpenID == user && room.Draw == user {
@@ -460,9 +467,8 @@ func GetWord() string {
 		Id: 0,
 	}
 	words := ctrl.GetAnswer(SearchWord)
-	rand.Seed(time.Now().Unix())
-	j := rand.Intn(len(words))
-	return words[j].Answer
+	result, _ := rand.Int(rand.Reader, big.NewInt(int64(len(words))))
+	return words[int(result.Int64())].Answer
 }
 
 // 选词
@@ -518,7 +524,7 @@ func OneGame(room Room) {
 		w := ChooseWordUnderTime(10, room, "ChooseWordCountdown")
 		room = GetRoom(room)
 		if w == false {
-			Choose(room, "老虎")
+			Choose(room, GetWord())
 			ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 选词完毕"))
 		}
 		RoundTime(60, room)

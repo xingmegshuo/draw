@@ -575,7 +575,7 @@ func RoundOver(room Room) {
 func GameOver(room Room) {
 	ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 游戏结束"))
 	ServerRoom(room, StrToJSON("room", "房间状态", "GameOver"))
-	str := "["
+	str := "{'status':'room','mes':'游戏结算','data':["
 	for l, item := range room.User {
 		Ready(room, item.OpenID)
 		if l == len(room.User)-1 {
@@ -587,8 +587,9 @@ func GameOver(room Room) {
 		}
 		room.User[l] = item
 	}
-	str = str + "]"
-	ServerRoom(room, StrToJSON("room", "游戏结算", str))
+	str = str + "]}"
+	str = strings.Replace(str, "'", "\"", -1)
+	ServerRoom(room, str)
 	if len(room.User) != 6 {
 		room.Status = true
 	}

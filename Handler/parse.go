@@ -121,8 +121,8 @@ func CloseUser(ws *websocket.Conn) {
 // 数据返回
 func Send(ws *websocket.Conn, mes string) {
 	if err := websocket.Message.Send(ws, mes); err != nil {
-		log.Println("客户端丢失", err.Error())
-		// CloseUser(ws)
+		// log.Println("客户端丢失", err.Error())
+		CloseUser(ws)
 		ws.Close()
 	}
 }

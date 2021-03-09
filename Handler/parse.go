@@ -115,10 +115,10 @@ func CloseUser(ws *websocket.Conn) {
 	if len(client_palyer[ws]) > 0 {
 		log.Println("断开链接的是谁", client_palyer[ws])
 		// log.Println(len(client_user), len(client_palyer), "现有的链接数量")
+		delete(client_user, ws)
+		delete(client_palyer, ws)
 		RemoveRoom()
 	}
-	delete(client_user, ws)
-	delete(client_palyer, ws)
 }
 
 // 数据返回

@@ -28,11 +28,25 @@ func (G GuessAnswer) Insert(a ...interface{}) bool {
 	return true
 }
 
-// 获取单个谜底
-func (G GuessAnswer) GetAnswer(a ...interface{}) (GuessAnswer, bool) {
+// 获取多个谜底
+func (G GuessAnswer) GetAnswer(a ...interface{}) []GuessAnswer {
+	u, ok := a[0].(GuessAnswer)
+	answer := make([]GuessAnswer, 0)
+	if ok != false {
+		err := orm.Find(&answer, u)
+		if err != nil {
+			log.Panic(err)
+		}
+	}
+	return answer
+}
+
+// 获取单个
+func (G GuessAnswer) GetAnswerOne(a ...interface{}) (GuessAnswer, bool) {
 	u, ok := a[0].(GuessAnswer)
 	if ok != false {
 		has, _ := orm.Get(&u)
+		// fmt.Println(u, has)
 		return u, has
 	} else {
 		return GuessAnswer{}, false

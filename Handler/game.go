@@ -9,8 +9,10 @@
 package Handler
 
 import (
+	"draw/Mydb"
 	"encoding/json"
 	"log"
+	"math/rand"
 	"strconv"
 	"strings"
 	"time"
@@ -341,18 +343,19 @@ func RoomSocket(mes []byte) {
 // 猜词语
 func Guess(room Room, user string, word string) {
 	str := ""
+	for _, i := range room.Word {
+		str = strings.Replace(word, string(i), "*", -1)
+	}
+	str = strings.Replace(word, room.Word, "**", -1)
 	add := false
 	for l, item := range room.User {
 		if item.OpenID == user && room.Draw != user && GuessPeople > 0 {
-			str = strings.Replace(word, room.Word, "**", -1)
 			if word == room.Word {
 				item.Score = item.Score + GuessPeople*2
 				GuessPeople = GuessPeople - 1
 				add = true
 				ServerRoom(room, StrToJSON("room", "答对加分", "[{'user':'"+user+"','score':'"+strconv.Itoa(item.Score)+"'}]"))
 			}
-		} else {
-			str = strings.Replace(word, room.Word, "**", -1)
 		}
 		room.User[l] = item
 	}
@@ -438,13 +441,28 @@ func Start(room Room, user string) {
 // 随机生成四个词
 func Word(room Room, user string) {
 	str := "{'status':'room','mes':'词语','data':["
-	str = str + "'老虎','老鼠','老鹰','猴子' ]}"
+	for i := 0; i < 3; i++ {
+		str = str + GetWord() + ","
+	}
+	str = str + GetWord() + "]}"
 	str = strings.Replace(str, "'", "\"", -1)
 	for _, item := range room.User {
 		if item.OpenID == user && room.Draw == user {
 			Send(item.Ws, str)
 		}
 	}
+}
+
+// 从数据库中获取词语
+func GetWord() string {
+	ctrl := Mydb.NewGuessAnswerCtrl()
+	SearchWord := Mydb.GuessAnswer{
+		Id: 0,
+	}
+	words := ctrl.GetAnswer(SearchWord)
+	rand.Seed(time.Now().Unix())
+	j := rand.Intn(len(words))
+	return words[j].Answer
 }
 
 // 选词
@@ -577,14 +595,35 @@ func RoundTime(count int, room Room) {
 		ServerRoom(room, StrToJSON("room", "倒计时", strconv.Itoa(count-i)))
 		time.Sleep(time.Second * 1)
 		if i == 0 {
-			ServerRoom(room, StrToJSON("room", "答案提示", "答案提示: 两个字"))
+			ServerRoom(room, StrToJSON("room", "答案提示", "答案提示: "+GetWordMess("first", room.Word)))
 		}
 		if i == 20 {
-			ServerRoom(room, StrToJSON("room", "答案提示", "答案提示: 动物名称"))
+			ServerRoom(room, StrToJSON("room", "答案提示", "答案提示: "+GetWordMess("second", room.Word)))
 		}
 		if i == 40 {
-			ServerRoom(room, StrToJSON("room", "答案提示", "答案提示: 山中猛虎"))
+			ServerRoom(room, StrToJSON("room", "答案提示", "答案提示: "+GetWordMess("third", room.Word)))
 		}
 
 	}
+}
+
+// 获取提示
+func GetWordMess(num string, word string) string {
+	ctrl := Mydb.NewGuessAnswerCtrl()
+	w := Mydb.GuessAnswer{
+		Answer: word,
+	}
+	A, has := ctrl.GetAnswerOne(w)
+	str := ""
+	if has {
+		switch num {
+		case "first":
+			str = A.First
+		case "second":
+			str = A.Second
+		case "third":
+			str = A.Third
+		}
+	}
+	return str
 }

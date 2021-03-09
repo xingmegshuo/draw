@@ -8,13 +8,21 @@
 
 package main
 
-import "fmt"
+import (
+	"draw/Mydb"
+	"fmt"
+	"math/rand"
+	"time"
+)
 
 func main() {
-	for _, i := range "老虎" {
-		fmt.Println(i)
-		if i == '老' {
-			fmt.Println("真不错")
-		}
+	ctrl := Mydb.NewGuessAnswerCtrl()
+	SearchWord := Mydb.GuessAnswer{
+		Id: 0,
 	}
+	words := ctrl.GetAnswer(SearchWord)
+
+	rand.Seed(time.Now().Unix())
+	j := rand.Intn(len(words))
+	fmt.Println(words[j].Answer)
 }

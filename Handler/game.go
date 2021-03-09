@@ -360,7 +360,9 @@ func Guess(room Room, user string, word string) {
 				item.Score = item.Score + GuessPeople*2
 				GuessPeople = GuessPeople - 1
 				add = true
-				ServerRoom(room, StrToJSON("room", "答对加分", "[{'user':'"+user+"','score':'"+strconv.Itoa(item.Score)+"'}]"))
+				a := "{'status':'room','mes':'答对加分','data':{'message':" + "[{'user':'" + user + "','score':'" + strconv.Itoa(item.Score) + "'}]" + "}}"
+				a = strings.Replace(a, "'", "\"", -1)
+				ServerRoom(room, a)
 			}
 		}
 		room.User[l] = item
@@ -387,6 +389,17 @@ func ReadyAll(room Room) {
 	for l, item := range room.User {
 		if item.Ready == "false" {
 			item.Ready = "true"
+		}
+		room.User[l] = item
+	}
+	UpdatePlayRoom(room)
+}
+
+// 给所有人取消准备
+func UnReadyAll(room Room) {
+	for l, item := range room.User {
+		if item.Ready == "true" {
+			item.Ready = "false"
 		}
 		room.User[l] = item
 	}
@@ -435,6 +448,7 @@ func Start(room Room, user string) {
 		if status {
 			ServerRoom(room, StrToJSON("room", "房间状态", "GameSuccess"))
 			ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 游戏正式开始"))
+			room.Status = false
 			OneGame(room)
 		}
 	} else {
@@ -579,7 +593,7 @@ func GameOver(room Room) {
 		room.Status = true
 	}
 	UnderTime(5, room, "GameOverCountdown")
-	UpdatePlayRoom(room)
+	UnReadyAll(room)
 }
 
 // 倒计时

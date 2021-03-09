@@ -142,6 +142,7 @@ func RemoveRoom() {
 	for i, ro := range PlayRoom {
 		if len(client_palyer) == 0 {
 			delete(PlayRoom, i)
+			log.Println("删除房间")
 		} else {
 			for {
 				l := IsUser(ro)

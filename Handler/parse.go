@@ -122,7 +122,7 @@ func CloseUser(ws *websocket.Conn) {
 func Send(ws *websocket.Conn, mes string) {
 	if err := websocket.Message.Send(ws, mes); err != nil {
 		log.Println("客户端丢失", err.Error())
-		CloseUser(ws)
+		// CloseUser(ws)
 		ws.Close()
 	}
 }

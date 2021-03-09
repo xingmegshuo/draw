@@ -81,5 +81,5 @@ func ParseConn(ws *websocket.Conn) {
 func CloseConn(ws *websocket.Conn) {
 	delete(client_map, ws)
 	Handler.CloseUser(ws)
-	ws.Close()
+	// ws.Close()
 }

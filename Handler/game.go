@@ -446,11 +446,11 @@ func Start(room Room, user string) {
 
 // 随机生成四个词
 func Word(room Room, user string) {
-	str := "{'status':'room','mes':'词语','data':'["
+	str := "{'status':'room','mes':'词语','data':["
 	for i := 0; i < 3; i++ {
 		str = str + "'" + GetWord() + "',"
 	}
-	str = str + "'" + GetWord() + "']'}"
+	str = str + "'" + GetWord() + "']}"
 	str = strings.Replace(str, "'", "\"", -1)
 	for _, item := range room.User {
 		if item.OpenID == user && room.Draw == user {

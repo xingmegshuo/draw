@@ -72,7 +72,7 @@ func GameStart(mes []byte, ws *websocket.Conn) string {
 			ro, ok := SearchRoom(Game.RoomID)
 			if len(Game.RoomID) > 0 {
 				if !ok {
-					str := "{'status':'error','mes':'房间','data':{'message':'加入房间失败,房间内正在游戏,或人员已满'}}"
+					str := "{'status':'RoomError','mes':'房间','data':{'message':'加入房间失败,房间不存在或房间正在游戏中'}}"
 					str = strings.Replace(str, "'", "\"", -1)
 					return str
 				}

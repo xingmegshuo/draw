@@ -163,7 +163,7 @@ func Init(ws *websocket.Conn, room Room) string {
 	str = strings.Replace(str, "'", "\"", -1)
 	ServerRoom(room, str)
 	// 加入房间自动准备
-	Ready(room, userID)
+	Ready(room, userID, "true")
 	RoomUser(room)
 	UpdatePlayRoom(room)
 	return GetRoomID(room)
@@ -256,15 +256,16 @@ func UpdatePlayRoom(room Room) {
 }
 
 // 用户准备
-func Ready(room Room, user string) {
+func Ready(room Room, user string, status string) {
 	for l, item := range room.User {
 		if item.OpenID == user {
-			if item.Ready == "true" {
+			if status == "false" {
 				item.Ready = "false"
 				str := "{'status':'system','mes':'系统消息','data':{'message':'" + "房间公告:" + user + "取消准备'}}"
 				str = strings.Replace(str, "'", "\"", -1)
 				ServerRoom(room, str)
-			} else {
+			} 
+			if status == "true" {
 				item.Ready = "true"
 				str := "{'status':'system','mes':'系统消息','data':{'message':'" + "房间公告:" + user + "已经准备'}}"
 				str = strings.Replace(str, "'", "\"", -1)
@@ -321,7 +322,7 @@ func RoomSocket(mes []byte) {
 	}
 	switch Msg.Message {
 	case "ready":
-		Ready(room, Msg.User)
+		Ready(room, Msg.User,Msg.Data)
 	case "send":
 		str := "{'status':'room','mes':'房间转发信息','data':{'message':'" + Msg.Data + "'}}"
 		str = strings.Replace(str, "'", "\"", -1)
@@ -393,6 +394,7 @@ func ReadyAll(room Room) {
 		room.User[l] = item
 	}
 	UpdatePlayRoom(room)
+	RoomUser(room)
 }
 
 // 给所有人取消准备
@@ -404,6 +406,7 @@ func UnReadyAll(room Room) {
 		room.User[l] = item
 	}
 	UpdatePlayRoom(room)
+	RoomUser(room)
 }
 
 // 是否有人取消准备
@@ -581,7 +584,6 @@ func GameOver(room Room) {
 	ServerRoom(room, StrToJSON("room", "房间状态", "GameOver"))
 	str := "{'status':'room','mes':'游戏结算','data':["
 	for l, item := range room.User {
-		Ready(room, item.OpenID)
 		if l == len(room.User)-1 {
 			str = str + "{'user':'" + item.OpenID + "','score':'" + strconv.Itoa(item.Score) + "'}"
 			item.Score = 0

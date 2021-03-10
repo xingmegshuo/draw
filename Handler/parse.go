@@ -179,9 +179,7 @@ func DeleteUser(room Room, l int) Room {
 // 是否有无效用户
 func IsUser(room Room) int {
 	for l, user := range room.User {
-		if _, ok := client_palyer[user.Ws]; ok {
-			log.Println("正常---", user.OpenID)
-		} else {
+		if _, ok := client_palyer[user.Ws]; !ok {
 			log.Println("此用户断开链接", user.OpenID)
 			room.People = room.People + 1
 			return l

@@ -69,7 +69,15 @@ func GameStart(mes []byte, ws *websocket.Conn) string {
 		return str
 	} else {
 		if Game.Type == "false" {
-			room = SearchRoom(Game.RoomID)
+			ro, ok := SearchRoom(Game.RoomID)
+			if len(Game.RoomID) > 0 {
+				if !ok {
+					str := "{'status':'error','mes':'房间','data':{'message':'加入房间失败,房间内正在游戏,或人员已满'}}"
+					str = strings.Replace(str, "'", "\"", -1)
+					return str
+				}
+			}
+			room = ro
 		} else {
 			room = NewRoom()
 		}
@@ -93,22 +101,20 @@ func IsIn(user string) bool {
 }
 
 // 查找房间
-func SearchRoom(roomID string) Room {
+func SearchRoom(roomID string) (Room, bool) {
 	index := "-1"
 	for l, item := range PlayRoom {
 		if item.People > 0 && item.Public == "true" && item.Status == true {
 			index = l
+			return PlayRoom[index], true
 		}
 		if l == roomID && item.Status == true {
 			index = l
+			return PlayRoom[index], true
 		}
 	}
 	log.Println("查找房间----------", index)
-	if index != "-1" {
-		return PlayRoom[index]
-	} else {
-		return NewRoom()
-	}
+	return NewRoom(), false
 }
 
 // 新建房间
@@ -264,7 +270,7 @@ func Ready(room Room, user string, status string) {
 				str := "{'status':'system','mes':'系统消息','data':{'message':'" + "房间公告:" + user + "取消准备'}}"
 				str = strings.Replace(str, "'", "\"", -1)
 				ServerRoom(room, str)
-			} 
+			}
 			if status == "true" {
 				item.Ready = "true"
 				str := "{'status':'system','mes':'系统消息','data':{'message':'" + "房间公告:" + user + "已经准备'}}"
@@ -322,7 +328,7 @@ func RoomSocket(mes []byte) {
 	}
 	switch Msg.Message {
 	case "ready":
-		Ready(room, Msg.User,Msg.Data)
+		Ready(room, Msg.User, Msg.Data)
 	case "send":
 		str := "{'status':'room','mes':'房间转发信息','data':{'message':'" + Msg.Data + "'}}"
 		str = strings.Replace(str, "'", "\"", -1)

@@ -72,7 +72,6 @@ func GameStart(mes []byte, ws *websocket.Conn) string {
 	} else {
 		if Game.Type == "false" {
 			ro, ok := SearchRoom(Game.RoomID)
-			log.Println(len(Game.RoomID), Game.RoomID, "-------------------携带房间与否", ok)
 			if len(Game.RoomID) > 0 {
 				if !ok {
 					str := "{'status':'RoomError','mes':'房间','data':{'message':'加入房间失败,房间不存在或房间正在游戏中'}}"
@@ -108,23 +107,25 @@ func SearchRoom(roomID string) (Room, bool) {
 	index := "-1"
 	for l, item := range PlayRoom {
 		if len(roomID) > 0 {
+			log.Println("携带房间号搜索--------------------------")
 			if l == roomID && item.Status == true {
 				index = l
 				return PlayRoom[index], true
 			}
 		} else {
+			log.Println("系统匹配进入房间----------------------")
 			if item.People > 0 && item.Public == "true" && item.Status == true {
 				index = l
 				return PlayRoom[index], true
 			}
 		}
 	}
-	log.Println("查找房间----------", index)
 	return NewRoom(), false
 }
 
 // 新建房间
 func NewRoom() Room {
+	log.Println("新建房间---------------------------")
 	ro := Room{
 		People: 6,
 		Public: "true",
@@ -503,11 +504,10 @@ func GetWord() string {
 // 选词
 func Choose(room Room, word string) {
 	room.Word = word
-	UpdatePlayRoom(room)
 	ServerRoom(room, StrToJSON("system", "选择的词语", word))
 	ServerRoom(room, StrToJSON("room", "选词完毕状态", "ok"))
-	UpdatePlayRoom(room)
 	log.Println(room.Word, "-----------------词语")
+	UpdatePlayRoom(room)
 }
 
 // 更新房间

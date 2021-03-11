@@ -494,7 +494,7 @@ func GetRoom(room Room) Room {
 
 // 选词倒计时
 func ChooseWordUnderTime(count int, room Room, mes string) bool {
-	ServerRoom(room, StrToJSON("room", "房间状态", "'message':'"+mes+"'}"))
+	ServerRoom(room, StrToJSON("room", "房间状态", "{'message':'"+mes+"'}"))
 	for i := 0; i < count; i++ {
 		ServerRoom(room, StrToJSON("time", "系统时间提示", "{'message':'房间公告: 倒计时还有"+strconv.Itoa(count-i)+"秒'}"))
 		ServerRoom(room, StrToJSON("room", "倒计时", "{'message':'"+strconv.Itoa(count-i)+"'}"))

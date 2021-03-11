@@ -520,7 +520,7 @@ func OneGame(room Room) {
 		UpdatePlayRoom(room)
 		ServerRoom(room, StrToJSON("room", "画家", "{'message':'"+item.OpenID+"'}"))
 		ServerRoom(room, StrToJSON("system", "系统提示信息", "{'message':'房间公告: 第"+strconv.Itoa(l+1)+"回合,画师为"+item.OpenID+",请他开始选词'}"))
-		w := ChooseWordUnderTime(10, room, "{'message':'ChooseWordCountdown'}")
+		w := ChooseWordUnderTime(10, room, "ChooseWordCountdown")
 		if w == false {
 			ServerRoom(room, StrToJSON("room", "房间状态", "{'message':'ChooseCountdownStop'}"))
 			Choose(room, GetWord())
@@ -555,7 +555,7 @@ func RoundOver(room Room) {
 	ServerRoom(room, StrToJSON("system", "系统提示信息", "{'message':'房间公告: 本轮回合结束,正确答案"+room.Word+"'}"))
 	ServerRoom(room, StrToJSON("room", "正确答案", "{'message':'"+room.Word+"'}"))
 	log.Println("回合结束正确答案:", room.Word)
-	ServerRoom(room, StrToJSON("system", "{'message':'系统提示信息", "房间公告: 点赞开始'}"))
+	ServerRoom(room, StrToJSON("system", "系统提示信息", "{'message':'房间公告: 点赞开始'}"))
 	ServerRoom(room, StrToJSON("room", "房间状态", "{'message':'RoundOver'}"))
 	UnderTime(5, room, "RoundCountdown")
 	ServerRoom(room, StrToJSON("room", "房间状态", "{'message':'RoundCountdownStop'}"))

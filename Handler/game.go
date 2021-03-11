@@ -587,7 +587,7 @@ func GameOver(room Room) {
 		room.Status = true
 	}
 	UnderTime(5, room, "GameOverCountdown")
-	ServerRoom(room, StrToJSON("room", "房间状态", "GameOverCountdownStop"))
+	ServerRoom(room, StrToJSON("room", "房间状态", "{'message':'GameOverCountdownStop'}"))
 	// UnReadyAll(room)
 }
 

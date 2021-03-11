@@ -61,62 +61,50 @@ var Game GameType
 func GameStart(mes []byte, ws *websocket.Conn) string {
 	var room Room
 	err := json.Unmarshal(mes, &Game)
+	log.Println(Game.RoomID, Game.Type, "房间的情况")
 	if err != nil {
 		log.Println("解析room:", err.Error())
 	}
-	in := IsIn(client_palyer[ws])
-	if in {
-		str := "{'status':'error','mes':'加入房间错误','data':{'message':'您已经在房间中'}}"
-		str = strings.Replace(str, "'", "\"", -1)
-		return str
-	} else {
-		if Game.Type == "false" {
-			ro, ok := SearchRoom(Game.RoomID)
-			if len(Game.RoomID) > 0 {
-				if !ok {
-					str := "{'status':'RoomError','mes':'房间','data':{'message':'加入房间失败,房间不存在或房间正在游戏中'}}"
-					str = strings.Replace(str, "'", "\"", -1)
-					return str
-				}
+	if Game.Type == "false" {
+		ro, ok := SearchRoom(Game.RoomID)
+		if len(Game.RoomID) > 0 {
+			if !ok {
+				return StrToJSON("RoomError", "房间", "{'message':'加入房间失败，房间不存在或房间正在游戏中'}")
 			}
-			room = ro
-		} else {
-			room = NewRoom()
 		}
-		message := Init(ws, room)
-		str := "{'status':'ok','mes':'房间号','data':{'message':'" + message + "'}}"
-		str = strings.Replace(str, "'", "\"", -1)
-		return str
+		room = ro
+	} else {
+		room = NewRoom()
 	}
+	message := Init(ws, room)
+	return StrToJSON("ok", "房间号", "{'message':'"+message+"'}")
+
 }
 
-// 判断在不在房间
-func IsIn(user string) bool {
+// 断线重连
+func IsIn(user string, ws *websocket.Conn) Player {
 	for _, ro := range PlayRoom {
 		for _, item := range ro.User {
 			if item.OpenID == user {
-				return true
+				return item
 			}
 		}
 	}
-	return false
+	return Player{}
 }
 
 // 查找房间
 func SearchRoom(roomID string) (Room, bool) {
-	index := "-1"
 	for l, item := range PlayRoom {
 		if len(roomID) > 0 {
 			log.Println("携带房间号搜索--------------------------")
 			if l == roomID && item.Status == true {
-				index = l
-				return PlayRoom[index], true
+				return PlayRoom[l], true
 			}
 		} else {
 			log.Println("系统匹配进入房间----------------------")
 			if item.People > 0 && item.Public == "true" && item.Status == true {
-				index = l
-				return PlayRoom[index], true
+				return PlayRoom[l], true
 			}
 		}
 	}
@@ -136,47 +124,35 @@ func NewRoom() Room {
 
 // 初始化房间
 func Init(ws *websocket.Conn, room Room) string {
-	userID := client_user[ws]
-	player := Player{
-		OpenID: client_user[ws],
-		Ws:     ws,
-		Ready:  "false",
-		Status: "true",
-	}
-	add := "false"
-	for l, item := range room.User {
-		if item.OpenID == player.OpenID {
-			add = "True"
-			room.User[l] = player //如果房间存在此用户
-		}
-	}
-	log.Println(player.OpenID, "-----------用户ID", room.Owner)
-	if add == "false" {
-		room.User = append(room.User, player)
-	}
-	// room.User[len(room.User)] = player
 	client_palyer[ws] = client_user[ws]
-	room.People = room.People - 1
 	delete(client_user, ws)
-	if room.People == 5 {
-		room.Owner = userID
-		PlayRoom[room.Owner] = room
-	} else {
-		for l, ro := range PlayRoom {
-			if ro.Owner == room.Owner {
-				PlayRoom[l] = room
+	player := IsIn(client_palyer[ws], ws)
+	if player.Status == "false" {
+		player.Ws = ws
+		player.Status = "true"
+		for l, item := range room.User {
+			if item.OpenID == player.OpenID {
+				room.User[l] = player
 			}
 		}
+	} else {
+		player = Player{
+			OpenID: client_user[ws],
+			Ws:     ws,
+			Ready:  "true",
+			Status: "true",
+		}
+		room.User = append(room.User, player)
+	}
+	room.People = room.People - 1
+	if room.People == 5 {
+		room.Owner = player.OpenID
 	}
 	if room.People == 0 {
 		room.Status = false
 	}
-	log.Println("------------房间人员", room.User, "******", len(PlayRoom))
-	str := "{'status':'system','mes':'系统消息','data':{'message':'" + "房间公告:" + userID + "进入房间'}}"
-	str = strings.Replace(str, "'", "\"", -1)
-	ServerRoom(room, str)
-	// 加入房间自动准备
-	Ready(room, userID, "true")
+	log.Println("------------房间人员", len(room.User), "******", len(PlayRoom))
+	ServerRoom(room, StrToJSON("system", "系统消息", "{'message':'房间公告:"+player.OpenID+"进入房间'}"))
 	RoomUser(room)
 	UpdatePlayRoom(room)
 	return GetRoomID(room)
@@ -189,7 +165,7 @@ func GetRoomID(room Room) string {
 			return l
 		}
 	}
-	return "null"
+	return ""
 }
 
 // 发送房间成员和状态
@@ -202,15 +178,15 @@ func RoomUser(room Room) {
 		user, _ := Userctrl.GetUser(thisUser)
 		if l == len(room.User)-1 {
 			if item.OpenID == room.Owner {
-				str = str + "{'user':'" + item.OpenID + "','nickName':'" + user.NickName + "','avatarUrl':'" + user.AvatarURL + "','ready':'" + item.Ready + "','homeowner':'" + item.OpenID + "'}"
+				str = str + "{'user':'" + item.OpenID + "','nickName':'" + user.NickName + "','avatarUrl':'" + user.AvatarURL + "','ready':'" + item.Ready + "','homeowner':'" + item.OpenID + "','outline':'" + item.Status + "'}"
 			} else {
-				str = str + "{'user':'" + item.OpenID + "','nickName':'" + user.NickName + "','avatarUrl':'" + user.AvatarURL + "','ready':'" + item.Ready + "'}"
+				str = str + "{'user':'" + item.OpenID + "','nickName':'" + user.NickName + "','avatarUrl':'" + user.AvatarURL + "','ready':'" + item.Ready + "','outline':'" + item.Status + "'}"
 			}
 		} else {
 			if item.OpenID == room.Owner {
-				str = str + "{'user':'" + item.OpenID + "','nickName':'" + user.NickName + "','avatarUrl':'" + user.AvatarURL + "','ready':'" + item.Ready + "','homeowner':'" + item.OpenID + "'},"
+				str = str + "{'user':'" + item.OpenID + "','nickName':'" + user.NickName + "','avatarUrl':'" + user.AvatarURL + "','ready':'" + item.Ready + "','homeowner':'" + item.OpenID + "','outline':'" + item.Status + "'},"
 			} else {
-				str = str + "{'user':'" + item.OpenID + "','nickName':'" + user.NickName + "','avatarUrl':'" + user.AvatarURL + "'},"
+				str = str + "{'user':'" + item.OpenID + "','nickName':'" + user.NickName + "','avatarUrl':'" + user.AvatarURL + "','outline':'" + item.Status + "'},"
 			}
 		}
 	}
@@ -231,39 +207,37 @@ func ServerRoom(room Room, mes string) {
 // 用户离线
 func OutLine(ws *websocket.Conn) {
 	for _, ro := range PlayRoom {
-		for _, item := range ro.User {
+		for l, item := range ro.User {
 			if item.Ws == ws {
-				log.Println("退出此用户------", item.OpenID, len(ro.User))
-				Leave(ro, item.OpenID)
+				item.Status = "false"
+				log.Println("给他掉线")
 			}
+			ro.User[l] = item
+			UpdatePlayRoom(ro)
 		}
 	}
 }
 
-// 发消息
-// func SendMES(ws *websocket.Conn, mes string) {
-// 	if err := websocket.Message.Send(ws, mes); err != nil {
-// 		log.Println("用户离线", err.Error())
-// 		// CloseUser(ws)
-// 	}
-// }
-
 // 更新房间到房间列表
 func UpdatePlayRoom(room Room) {
+	b := ""
 	for l, item := range PlayRoom {
 		if item.Owner == room.Owner {
 			PlayRoom[l] = room
+			b = "true"
 		}
 		if item.People == 6 || len(item.User) == 0 {
+			b = "true"
 			log.Println("删除房间-----------")
 			delete(PlayRoom, l)
 		}
-		// for _, u := range item.User {
-		// 	if _, ok := client_palyer[u.Ws]; !ok {
-		// 		log.Println("-----------不在列表中",len(client_palyer))
-		// 		Leave(item, u.OpenID)
-		// 	}
-		// }
+	}
+	if b == "" {
+		result, _ := rand.Int(rand.Reader, big.NewInt(int64(10000)))
+		number := strconv.Itoa(int(result.Int64()))
+		if _, ok := PlayRoom[number]; !ok {
+			PlayRoom[number] = room
+		}
 	}
 }
 
@@ -313,9 +287,7 @@ func Leave(room Room, user string) {
 	if len(room.User) >= 1 {
 		UpdatePlayRoom(room)
 		RoomUser(room)
-		str := "{'status':'system','mes':'系统消息','data':{'message':'" + "房间公告:" + user + "退出房间'}}"
-		str = strings.Replace(str, "'", "\"", -1)
-		ServerRoom(room, str)
+		ServerRoom(room, StrToJSON("system", "系统消息", "{'message':'房间公告:"+user+"退出房间'}"))
 	}
 }
 
@@ -336,17 +308,12 @@ func RoomSocket(mes []byte) {
 	case "ready":
 		Ready(room, Msg.User, Msg.Data)
 	case "send":
-		str := "{'status':'room','mes':'房间转发信息','data':{'message':'" + Msg.Data + "'}}"
-		str = strings.Replace(str, "'", "\"", -1)
-		ServerRoom(room, str)
+		ServerRoom(room, StrToJSON("room", "房间转发信息", "{'message':':"+Msg.Data+"'}"))
 	case "leave":
-		log.Println("退出房间----------------", room.Owner)
 		Leave(room, Msg.User)
 	case "start":
-		log.Println("开始游戏---------------", room.Owner)
 		Start(room, Msg.User)
 	case "word":
-		log.Println("获取生成的词语-----------------", room.Owner)
 		Word(room, Msg.User)
 	case "choose":
 		log.Println("选词----------------", room.Owner, Msg.Data)
@@ -394,7 +361,7 @@ func Guess(room Room, user string, word string) {
 
 // 格式化返回数据
 func StrToJSON(status string, mes string, message string) string {
-	str := "{'status':'" + status + "','mes':'" + mes + "','data':{'message':'" + message + "'}}"
+	str := "{'status':'" + status + "','mes':'" + mes + "','data':" + message + "}"
 	str = strings.Replace(str, "'", "\"", -1)
 	return str
 }
@@ -541,6 +508,9 @@ func ChooseWordUnderTime(count int, room Room, mes string) bool {
 // 游戏流程
 func OneGame(room Room) {
 	for l, item := range room.User {
+		if item.Status == "false" {
+			continue
+		}
 		GuessPeople = len(room.User) - 1
 		room.Draw = item.OpenID
 		UpdatePlayRoom(room)
@@ -552,6 +522,7 @@ func OneGame(room Room) {
 			Choose(room, GetWord())
 			ServerRoom(room, StrToJSON("system", "系统提示信息", "房间公告: 选词完毕"))
 		}
+		time.Sleep(time.Second * 1)
 		room = GetRoom(room)
 		RoundTime(30, room)
 		GuessPeople = len(room.User) - 1
@@ -568,6 +539,7 @@ func OneGame(room Room) {
 			GameOver(room)
 			break
 		}
+
 	}
 	room = GetRoom(room)
 	GameOver(room)
@@ -600,6 +572,9 @@ func GameOver(room Room) {
 			item.Score = 0
 		}
 		room.User[l] = item
+		if item.Status == "false" {
+			Leave(room, item.OpenID)
+		}
 	}
 	str = str + "]}"
 	str = strings.Replace(str, "'", "\"", -1)
@@ -609,7 +584,7 @@ func GameOver(room Room) {
 	}
 	UnderTime(5, room, "GameOverCountdown")
 	ServerRoom(room, StrToJSON("room", "房间状态", "GameOverCountdownStop"))
-	UnReadyAll(room)
+	// UnReadyAll(room)
 }
 
 // 倒计时

@@ -110,11 +110,10 @@ func ParseData(con string, ws *websocket.Conn) {
 	}
 }
 
-// 关闭连接时退出用户
+// 关闭连接时用户掉线
 func CloseUser(ws *websocket.Conn) {
 	if len(client_palyer[ws]) > 0 {
 		log.Println("断开链接的是谁", client_palyer[ws])
-		// log.Println(len(client_user), len(client_palyer), "现有的链接数量")
 		delete(client_user, ws)
 		delete(client_palyer, ws)
 		RemoveRoom()
@@ -130,16 +129,6 @@ func Send(ws *websocket.Conn, mes string) {
 	}
 }
 
-// // 清除连接
-// func Clear(clientMap map[*websocket.Conn]string) {
-// 	for ws, _ := range client_palyer {
-// 		if _, ok := clientMap[ws]; !ok {
-// 			log.Println("清除无效链接")
-// 			CloseUser(ws)
-// 		}
-// 	}
-// }
-
 // 移除房间的人
 func RemoveRoom() {
 	for i, ro := range PlayRoom {
@@ -147,43 +136,22 @@ func RemoveRoom() {
 			delete(PlayRoom, i)
 			log.Println("删除房间")
 		} else {
-			for {
-				l := IsUser(ro)
-				if l == -1 {
-					break
-				}
-				ro = DeleteUser(ro, l)
-			}
+			IsUser(ro)
 			log.Println("还有几个人", len(ro.User))
+			UpdatePlayRoom(ro)
 			if len(ro.User) > 1 {
 				RoomUser(ro)
-				// str := "{'status':'system','mes':'系统消息','data':{'message':'" + "房间公告:" + openID + "退出房间'}}"
-				// str = strings.Replace(str, "'", "\"", -1)
-				// ServerRoom(ro, str)
-				PlayRoom[i] = ro
-			} else {
-				delete(PlayRoom, i)
 			}
 		}
 	}
-}
-
-// 移除无效用户
-func DeleteUser(room Room, l int) Room {
-	if l != -1 {
-		room.User = append(room.User[:l], room.User[l+1:]...)
-	}
-	return room
 }
 
 // 是否有无效用户
-func IsUser(room Room) int {
-	for l, user := range room.User {
+func IsUser(room Room) {
+	for _, user := range room.User {
 		if _, ok := client_palyer[user.Ws]; !ok {
 			log.Println("此用户断开链接", user.OpenID)
-			room.People = room.People + 1
-			return l
+			OutLine(user.Ws)
 		}
 	}
-	return -1
 }

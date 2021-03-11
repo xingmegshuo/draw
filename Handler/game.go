@@ -60,6 +60,7 @@ var Game GameType
 
 // 开始游戏- 返回房间号
 func GameStart(mes []byte, ws *websocket.Conn) string {
+	Game.Search = "false"
 	var room Room
 	err := json.Unmarshal(mes, &Game)
 	log.Println(Game.RoomID, Game.Type, "房间的情况")

@@ -48,6 +48,7 @@ type Mes struct {
 type GameType struct {
 	Type   string
 	RoomID string
+	Search string
 }
 
 var GuessPeople int
@@ -60,7 +61,6 @@ var Game GameType
 // 开始游戏- 返回房间号
 func GameStart(mes []byte, ws *websocket.Conn) string {
 	var room Room
-	Game.RoomID = ""
 	err := json.Unmarshal(mes, &Game)
 	log.Println(Game.RoomID, Game.Type, "房间的情况")
 	if err != nil {
@@ -68,7 +68,7 @@ func GameStart(mes []byte, ws *websocket.Conn) string {
 	}
 	if Game.Type == "false" {
 		ro, ok := SearchRoom(Game.RoomID)
-		if len(Game.RoomID) > 0 {
+		if Game.Search == "true" {
 			if !ok {
 				return StrToJSON("RoomError", "房间", "{'message':'加入房间失败，房间不存在或房间正在游戏中'}")
 			}
@@ -98,7 +98,7 @@ func IsIn(user string, ws *websocket.Conn) Player {
 // 查找房间
 func SearchRoom(roomID string) (Room, bool) {
 	for l, item := range PlayRoom {
-		if len(roomID) > 0 {
+		if Game.Search == "true" {
 			log.Println("携带房间号搜索--------------------------")
 			if l == roomID && item.Status == true {
 				return PlayRoom[l], true

@@ -105,14 +105,16 @@ func IsIn(user string) bool {
 func SearchRoom(roomID string) (Room, bool) {
 	index := "-1"
 	for l, item := range PlayRoom {
-		if item.People > 0 && item.Public == "true" && item.Status == true {
-			index = l
-			return PlayRoom[index], true
-		}
-		if l == roomID && item.Status == true {
-			log.Println(l, roomID)
-			index = l
-			return PlayRoom[index], true
+		if len(roomID) > 0 {
+			if l == roomID && item.Status == true {
+				index = l
+				return PlayRoom[index], true
+			}
+		} else {
+			if item.People > 0 && item.Public == "true" && item.Status == true {
+				index = l
+				return PlayRoom[index], true
+			}
 		}
 	}
 	log.Println("查找房间----------", index)
@@ -332,7 +334,7 @@ func RoomSocket(mes []byte) {
 	case "ready":
 		Ready(room, Msg.User, Msg.Data)
 	case "send":
-		str := "{'status':'room','mes':'房间转发信息','data':{'message':'" + Msg.Data + "'}}"
+		str := "{'status':'room','mes':'房间转发信息','data':{'message':'" + Msg.Data + "','user':'" + Msg.User + "'}}"
 		str = strings.Replace(str, "'", "\"", -1)
 		ServerRoom(room, str)
 	case "leave":
@@ -382,7 +384,9 @@ func Guess(room Room, user string, word string) {
 		}
 		room.User[l] = item
 	}
-	ServerRoom(room, StrToJSON("system", "猜答案和交流", str))
+	data := "{'status':'system','mes':'猜答案和交流','data':{'message':'" + str + "','user':'" + user + "'}}"
+	data = strings.Replace(data, "'", "\"", -1)
+	ServerRoom(room, data)
 	UpdatePlayRoom(room)
 }
 

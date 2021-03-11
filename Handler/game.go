@@ -432,7 +432,7 @@ func Start(room Room, user string) {
 	}
 	if room.Owner == user && a >= 1 && room.People <= 4 {
 		ServerRoom(room, StrToJSON("system", "系统提示信息", "{'message':'房间公告: 游戏五秒后开始'}"))
-		status := IsStartUnderTime(5, room, "GameCountdown")
+		status := IsStartUnderTime(5, room, "{'message':'GameCountdown'}")
 		if status {
 			ServerRoom(room, StrToJSON("room", "房间状态", "{'message':'StartCountdownStop'}"))
 			ServerRoom(room, StrToJSON("room", "房间状态", "{'message':'GameSuccess'}"))

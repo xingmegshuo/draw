@@ -504,11 +504,7 @@ func GetWord() string {
 func Choose(room Room, word string) {
 	room.Word = word
 	UpdatePlayRoom(room)
-	for _, u := range room.User {
-		if u.OpenID == room.Draw {
-			Send(u.Ws, StrToJSON("room", "选择的词语", word))
-		}
-	}
+	ServerRoom(room, StrToJSON("system", "选择的词语", word))
 	ServerRoom(room, StrToJSON("room", "选词完毕状态", "ok"))
 	UpdatePlayRoom(room)
 	log.Println(room.Word, "-----------------词语")

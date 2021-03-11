@@ -70,6 +70,7 @@ func GameStart(mes []byte, ws *websocket.Conn) string {
 	} else {
 		if Game.Type == "false" {
 			ro, ok := SearchRoom(Game.RoomID)
+			log.Println(len(Game.RoomID), "-------------------携带房间与否", ok)
 			if len(Game.RoomID) > 0 {
 				if !ok {
 					str := "{'status':'RoomError','mes':'房间','data':{'message':'加入房间失败,房间不存在或房间正在游戏中'}}"

@@ -335,7 +335,7 @@ func RoomSocket(mes []byte) {
 	case "ready":
 		Ready(room, Msg.User, Msg.Data)
 	case "send":
-		str := "{'status':'room','mes':'房间转发信息','data':{'message':'" + Msg.Data + "','user':'" + Msg.User + "'}}"
+		str := "{'status':'room','mes':'房间转发信息','data':{'message':'" + Msg.Data + "'}}"
 		str = strings.Replace(str, "'", "\"", -1)
 		ServerRoom(room, str)
 	case "leave":

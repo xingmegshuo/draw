@@ -534,10 +534,12 @@ func OneGame(room Room) {
 		GuessPeople = len(room.User) - 1
 		RoundOver(room)
 		room.Word = ""
+		UpdatePlayRoom(room)
 		if GuessPeople == 0 {
 			GuessPeople = len(room.User) - 1
 			RoundOver(room)
 			room.Word = ""
+			UpdatePlayRoom(room)
 			continue
 		}
 		if len(room.User) < 2 {

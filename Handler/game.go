@@ -51,6 +51,8 @@ type GameType struct {
 }
 
 var GuessPeople int
+var Wordctrl = Mydb.NewGuessAnswerCtrl()
+var Userctrl = Mydb.NewUserCtrl()
 
 // 是否新建房间的数据解析
 var Game GameType
@@ -191,13 +193,12 @@ func GetRoomID(room Room) string {
 
 // 发送房间成员和状态
 func RoomUser(room Room) {
-	ctrl := Mydb.NewUserCtrl()
 	str := "{'status':'room','mes':'房间成员信息','data':["
 	for l, item := range room.User {
 		thisUser := Mydb.User{
 			OpenID: item.OpenID,
 		}
-		user, _ := ctrl.GetUser(thisUser)
+		user, _ := Userctrl.GetUser(thisUser)
 		if l == len(room.User)-1 {
 			if item.OpenID == room.Owner {
 				str = str + "{'user':'" + item.OpenID + "','nickName':'" + user.NickName + "','avatarUrl':'" + user.AvatarURL + "','ready':'" + item.Ready + "','homeowner':'" + item.OpenID + "'}"
@@ -491,11 +492,10 @@ func Word(room Room, user string) {
 
 // 从数据库中获取词语
 func GetWord() string {
-	ctrl := Mydb.NewGuessAnswerCtrl()
 	SearchWord := Mydb.GuessAnswer{
 		Id: 0,
 	}
-	words := ctrl.GetAnswer(SearchWord)
+	words := Wordctrl.GetAnswer(SearchWord)
 	result, _ := rand.Int(rand.Reader, big.NewInt(int64(len(words))))
 	return words[int(result.Int64())].Answer
 }
@@ -649,11 +649,10 @@ func RoundTime(count int, room Room) {
 
 // 获取提示
 func GetWordMess(num string, word string) string {
-	ctrl := Mydb.NewGuessAnswerCtrl()
 	w := Mydb.GuessAnswer{
 		Answer: word,
 	}
-	A, has := ctrl.GetAnswerOne(w)
+	A, has := Wordctrl.GetAnswerOne(w)
 	str := ""
 	if has {
 		switch num {

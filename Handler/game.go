@@ -498,6 +498,7 @@ func ChooseWordUnderTime(count int, room Room, mes string) bool {
 	for i := 0; i < count; i++ {
 		ServerRoom(room, StrToJSON("time", "系统时间提示", "{'message':'房间公告: 倒计时还有"+strconv.Itoa(count-i)+"秒'}"))
 		ServerRoom(room, StrToJSON("room", "倒计时", "{'message':'"+strconv.Itoa(count-i)+"'}"))
+		log.Println(count - i)
 		ro := GetRoom(room)
 		if ro.Word != "" {
 			ServerRoom(room, StrToJSON("room", "房间状态", "{'message':'ChooseCountdownStop'}"))
@@ -521,6 +522,7 @@ func OneGame(room Room) {
 		ServerRoom(room, StrToJSON("room", "画家", "{'message':'"+item.OpenID+"'}"))
 		ServerRoom(room, StrToJSON("system", "系统提示信息", "{'message':'房间公告: 第"+strconv.Itoa(l+1)+"回合,画师为"+item.OpenID+",请他开始选词'}"))
 		w := ChooseWordUnderTime(10, room, "ChooseWordCountdown")
+		log.Println("djdjkdjjjjjjjjj--------", w)
 		if w == false {
 			ServerRoom(room, StrToJSON("room", "房间状态", "{'message':'ChooseCountdownStop'}"))
 			Choose(room, GetWord())

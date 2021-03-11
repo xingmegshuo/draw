@@ -551,7 +551,7 @@ func OneGame(room Room) {
 
 // 回合结束
 func RoundOver(room Room) {
-	ServerRoom(room, StrToJSON("system", "{'message':'系统提示信息", "房间公告: 画家已画完'}"))
+	ServerRoom(room, StrToJSON("system", "系统提示信息", "{'message':'房间公告: 画家已画完'}"))
 	ServerRoom(room, StrToJSON("system", "系统提示信息", "{'message':'房间公告: 本轮回合结束,正确答案"+room.Word+"'}"))
 	ServerRoom(room, StrToJSON("room", "正确答案", "{'message':'"+room.Word+"'}"))
 	log.Println("回合结束正确答案:", room.Word)

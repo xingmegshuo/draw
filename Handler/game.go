@@ -27,16 +27,18 @@ type Player struct {
 	Ready  string
 	Score  int
 	Status string
+	Ok     string
 }
 
 type Room struct {
-	People int
-	Public string
-	User   []Player
-	Owner  string
-	Word   string
-	Draw   string
-	Status bool
+	People      int
+	Public      string
+	User        []Player
+	Owner       string
+	Word        string
+	Draw        string
+	Status      bool
+	GuessPeople int
 }
 
 type Mes struct {
@@ -51,7 +53,6 @@ type GameType struct {
 	Search string
 }
 
-var GuessPeople int
 var Wordctrl = Mydb.NewGuessAnswerCtrl()
 var Userctrl = Mydb.NewUserCtrl()
 
@@ -339,19 +340,22 @@ func Guess(room Room, user string, word string) {
 	str = strings.Replace(word, room.Word, "**", -1)
 	add := false
 	for l, item := range room.User {
-		if item.OpenID == user && room.Draw != user && GuessPeople > 0 {
-			if len(word) < 12 {
+		if item.OpenID == user && room.Draw != user && room.GuessPeople > 0 {
+			if len(word) <= 12 {
 				if word == room.Word {
-					item.Score = item.Score + GuessPeople*2
-					GuessPeople = GuessPeople - 1
+					item.Score = item.Score + room.GuessPeople*2
+					room.GuessPeople = room.GuessPeople - 1
 					add = true
 					a := "{'status':'room','mes':'答对加分','data':{'message':" + "[{'user':'" + user + "','score':'" + strconv.Itoa(item.Score) + "'}]" + "}}"
 					a = strings.Replace(a, "'", "\"", -1)
 					ServerRoom(room, a)
+					item.Ok = "true"
 				} else {
-					a := "{'status':'system','mes':'答错了','data':{'message':房间公告:'" + item.OpenID + "回答错误','user':'" + item.OpenID + "'}}"
-					a = strings.Replace(a, "'", "\"", -1)
-					ServerRoom(room, a)
+					if item.Ok != "true" {
+						a := "{'status':'system','mes':'答错了','data':{'message':'房间公告:" + item.OpenID + "回答错误','user':'" + item.OpenID + "'}}"
+						a = strings.Replace(a, "'", "\"", -1)
+						ServerRoom(room, a)
+					}
 				}
 			}
 
@@ -523,7 +527,7 @@ func OneGame(room Room) {
 		if item.Status == "false" {
 			continue
 		}
-		GuessPeople = len(room.User) - 1
+		room.GuessPeople = len(room.User) - 1
 		room.Draw = item.OpenID
 		UpdatePlayRoom(room)
 		ServerRoom(room, StrToJSON("room", "画家", "{'message':'"+item.OpenID+"'}"))
@@ -538,12 +542,12 @@ func OneGame(room Room) {
 		time.Sleep(time.Second * 1)
 		room = GetRoom(room)
 		RoundTime(30, room)
-		GuessPeople = len(room.User) - 1
+		room.GuessPeople = len(room.User) - 1
 		RoundOver(room)
 		room.Word = ""
 		UpdatePlayRoom(room)
-		if GuessPeople == 0 {
-			GuessPeople = len(room.User) - 1
+		if room.GuessPeople == 0 {
+			room.GuessPeople = len(room.User) - 1
 			RoundOver(room)
 			room.Word = ""
 			UpdatePlayRoom(room)
@@ -565,6 +569,10 @@ func RoundOver(room Room) {
 	ServerRoom(room, StrToJSON("system", "系统提示信息", "{'message':'房间公告: 画家已画完'}"))
 	ServerRoom(room, StrToJSON("system", "系统提示信息", "{'message':'房间公告: 本轮回合结束,正确答案"+room.Word+"'}"))
 	ServerRoom(room, StrToJSON("room", "正确答案", "{'message':'"+room.Word+"'}"))
+	for l, item := range room.User {
+		item.Ok = ""
+		room.User[l] = item
+	}
 	log.Println("回合结束正确答案:", room.Word)
 	ServerRoom(room, StrToJSON("system", "系统提示信息", "{'message':'房间公告: 点赞开始'}"))
 	ServerRoom(room, StrToJSON("room", "房间状态", "{'message':'RoundOver'}"))

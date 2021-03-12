@@ -340,14 +340,21 @@ func Guess(room Room, user string, word string) {
 	add := false
 	for l, item := range room.User {
 		if item.OpenID == user && room.Draw != user && GuessPeople > 0 {
-			if word == room.Word {
-				item.Score = item.Score + GuessPeople*2
-				GuessPeople = GuessPeople - 1
-				add = true
-				a := "{'status':'room','mes':'答对加分','data':{'message':" + "[{'user':'" + user + "','score':'" + strconv.Itoa(item.Score) + "'}]" + "}}"
-				a = strings.Replace(a, "'", "\"", -1)
-				ServerRoom(room, a)
+			if len(word) < 12 {
+				if word == room.Word {
+					item.Score = item.Score + GuessPeople*2
+					GuessPeople = GuessPeople - 1
+					add = true
+					a := "{'status':'room','mes':'答对加分','data':{'message':" + "[{'user':'" + user + "','score':'" + strconv.Itoa(item.Score) + "'}]" + "}}"
+					a = strings.Replace(a, "'", "\"", -1)
+					ServerRoom(room, a)
+				} else {
+					a := "{'status':'system','mes':'答错了','data':{'message':'"  +item.OpenID+   "回答错误'}}"
+					a = strings.Replace(a, "'", "\"", -1)
+					ServerRoom(room, a)
+				}
 			}
+
 		}
 		room.User[l] = item
 	}

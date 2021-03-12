@@ -9,16 +9,9 @@
 package main
 
 import (
-	"crypto/rand"
 	"fmt"
-	"math/big"
-	"reflect"
 )
 
 func main() {
-	for i := 0; i < 3; i++ {
-		result, _ := rand.Int(rand.Reader, big.NewInt(20))
-		// result = int(result)
-		fmt.Println(reflect.TypeOf(int(result.Int64())), result)
-	}
+	fmt.Println(len("你好么大"))
 }

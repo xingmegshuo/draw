@@ -181,15 +181,15 @@ func RoomUser(room Room) {
 		user, _ := Userctrl.GetUser(thisUser)
 		if l == len(room.User)-1 {
 			if item.OpenID == room.Owner {
-				str = str + "{'user':'" + item.OpenID + "','nickName':'" + user.NickName + "','avatarUrl':'" + user.AvatarURL + "','ready':'" + item.Ready + "','homeowner':'" + item.OpenID + "','online':'" + item.Status + "'}"
+				str = str + "{'user':'" + item.OpenID + "','nickName':'" + user.NickName + "','avatarUrl':'" + user.AvatarURL + "','orther':'" + user.Orther + "','ready':'" + item.Ready + "','homeowner':'" + item.OpenID + "','online':'" + item.Status + "'}"
 			} else {
-				str = str + "{'user':'" + item.OpenID + "','nickName':'" + user.NickName + "','avatarUrl':'" + user.AvatarURL + "','ready':'" + item.Ready + "','online':'" + item.Status + "'}"
+				str = str + "{'user':'" + item.OpenID + "','nickName':'" + user.NickName + "','avatarUrl':'" + user.AvatarURL + "','orther':'" + user.Orther + "','ready':'" + item.Ready + "','online':'" + item.Status + "'}"
 			}
 		} else {
 			if item.OpenID == room.Owner {
-				str = str + "{'user':'" + item.OpenID + "','nickName':'" + user.NickName + "','avatarUrl':'" + user.AvatarURL + "','ready':'" + item.Ready + "','homeowner':'" + item.OpenID + "','online':'" + item.Status + "'},"
+				str = str + "{'user':'" + item.OpenID + "','nickName':'" + user.NickName + "','avatarUrl':'" + user.AvatarURL + "','orther':'" + user.Orther + "','ready':'" + item.Ready + "','homeowner':'" + item.OpenID + "','online':'" + item.Status + "'},"
 			} else {
-				str = str + "{'user':'" + item.OpenID + "','nickName':'" + user.NickName + "','avatarUrl':'" + user.AvatarURL + "','online':'" + item.Status + "'},"
+				str = str + "{'user':'" + item.OpenID + "','nickName':'" + user.NickName + "','avatarUrl':'" + user.AvatarURL + "','orther':'" + user.Orther + "','online':'" + item.Status + "'},"
 			}
 		}
 	}

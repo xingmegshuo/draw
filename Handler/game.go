@@ -349,7 +349,7 @@ func Guess(room Room, user string, word string) {
 					a = strings.Replace(a, "'", "\"", -1)
 					ServerRoom(room, a)
 				} else {
-					a := "{'status':'system','mes':'答错了','data':{'message':'"  +item.OpenID+   "回答错误'}}"
+					a := "{'status':'system','mes':'答错了','data':{'message':房间公告:'" + item.OpenID + "回答错误','user':'" + item.OpenID + "'}}"
 					a = strings.Replace(a, "'", "\"", -1)
 					ServerRoom(room, a)
 				}

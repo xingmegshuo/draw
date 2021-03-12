@@ -36,6 +36,7 @@ func Login(mes []byte, ws *websocket.Conn) string {
 		log.Println("数据问题:", err.Error())
 		return ToMes("error", "登录操作失败")
 	}
+	log.Println("登录发送的数据", user)
 	if len(user.OpenID) > 0 && len(user.NickName) > 0 && len(user.AvatarURL) > 0 {
 		// log.Println("hhhh")
 		thisUser := Mydb.User{

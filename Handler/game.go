@@ -196,6 +196,7 @@ func RoomUser(room Room) {
 	}
 	str = str + "]}"
 	str = strings.Replace(str, "'", "\"", -1)
+	log.Println(str)
 	ServerRoom(room, str)
 }
 
@@ -280,6 +281,7 @@ func Leave(room Room, user string) {
 			delete(client_palyer, item.Ws)
 		}
 		if room.Owner == user && len(room.User) > 0 {
+			log.Println(room.Owner, len(room.User))
 			room.Owner = room.User[0].OpenID
 			RoomUser(room)
 		}

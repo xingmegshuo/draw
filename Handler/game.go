@@ -243,7 +243,6 @@ func UpdatePlayRoom(room Room) {
 			PlayRoom[number] = room
 		}
 	}
-	log.Println("几个房间", len(PlayRoom))
 }
 
 // 用户准备
@@ -295,7 +294,7 @@ func Leave(room Room, user string) {
 		newOwner := room.Owner
 		changeOwner(oldOwner, newOwner)
 	}
-	log.Println(room.Owner)
+	log.Println(room.Owner, "New")
 	UpdatePlayRoom(room)
 	room = GetRoom(room)
 	log.Println(len(room.User), "后来几个用户", "几个房间", len(PlayRoom))

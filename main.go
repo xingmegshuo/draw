@@ -63,7 +63,7 @@ func Echo(ws *websocket.Conn) {
 func ParseConn(ws *websocket.Conn) {
 	var err error
 	client_map[ws] = ws.RemoteAddr().String()
-	log.Println(client_map)
+	// log.Println(client_map)
 	for {
 		var reply string
 		if err = websocket.Message.Receive(ws, &reply); err != nil {

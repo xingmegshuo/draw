@@ -196,7 +196,6 @@ func RoomUser(room Room) {
 	}
 	str = str + "]}"
 	str = strings.Replace(str, "'", "\"", -1)
-	log.Println(str)
 	ServerRoom(room, str)
 }
 
@@ -273,6 +272,7 @@ func Ready(room Room, user string, status string) {
 func Leave(room Room, user string) {
 	a := -1
 	log.Println(len(room.User), "之前几个用户")
+	change_owner := false
 	for l, item := range room.User {
 		if item.OpenID == user {
 			a = l
@@ -280,15 +280,17 @@ func Leave(room Room, user string) {
 			client_user[item.Ws] = client_palyer[item.Ws]
 			delete(client_palyer, item.Ws)
 		}
-		if room.Owner == user && len(room.User) > 0 {
-			log.Println(room.Owner, len(room.User))
-			room.Owner = room.User[0].OpenID
-			RoomUser(room)
+		if room.Owner == user && len(room.User) > 1 {
+			change_owner = true
 		}
 	}
 	if a != -1 {
 		room.User = append(room.User[:a], room.User[a+1:]...)
 	}
+	if change_owner == true {
+		room.Owner = room.User[0].OpenID
+	}
+	log.Println(room.Owner)
 	UpdatePlayRoom(room)
 	room = GetRoom(room)
 	log.Println(len(room.User), "后来几个用户", "几个房间", len(PlayRoom))

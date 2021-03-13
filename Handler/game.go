@@ -64,7 +64,7 @@ func GameStart(mes []byte, ws *websocket.Conn) string {
 	Game.Search = "false"
 	var room Room
 	err := json.Unmarshal(mes, &Game)
-	log.Println(Game.RoomID, Game.Type, "房间的情况")
+	// log.Println(Game.RoomID, Game.Type, "房间的情况")
 	if err != nil {
 		log.Println("解析room:", err.Error())
 	}
@@ -214,7 +214,7 @@ func OutLine(ws *websocket.Conn) {
 		for l, item := range ro.User {
 			if item.Ws == ws {
 				item.Status = "false"
-				log.Println("给他掉线")
+				log.Println("给他掉线", item.OpenID)
 			}
 			ro.User[l] = item
 			UpdatePlayRoom(ro)
@@ -321,11 +321,11 @@ func RoomSocket(mes []byte) {
 	case "word":
 		Word(room, Msg.User)
 	case "choose":
-		log.Println("选词----------------", room.Owner, Msg.Data)
+		// log.Println("选词----------------", room.Owner, Msg.Data)
 		str := strings.Replace(Msg.Data, "\"", "", -1)
 		Choose(room, str)
 	case "guess":
-		log.Println("猜词---------------", room.Word)
+		// log.Println("猜词---------------", room.Word)
 		str := strings.Replace(Msg.Data, "\"", "", -1)
 		Guess(room, Msg.User, str)
 	}
@@ -488,7 +488,7 @@ func Choose(room Room, word string) {
 	room.Word = word
 	ServerRoom(room, StrToJSON("system", "选择的词语", "{'message':'"+word+"'}"))
 	ServerRoom(room, StrToJSON("room", "选词完毕状态", "{'message':'ok'}"))
-	log.Println(room.Word, "-----------------词语")
+	// log.Println(room.Word, "-----------------词语")
 	UpdatePlayRoom(room)
 }
 
@@ -509,7 +509,7 @@ func ChooseWordUnderTime(count int, room Room, mes string) bool {
 	for i := 0; i < count; i++ {
 		ServerRoom(room, StrToJSON("time", "系统时间提示", "{'message':'房间公告: 倒计时还有"+strconv.Itoa(count-i)+"秒'}"))
 		ServerRoom(room, StrToJSON("room", "倒计时", "{'message':'"+strconv.Itoa(count-i)+"'}"))
-		log.Println(count - i)
+		// log.Println(count - i)
 		ro := GetRoom(room)
 		if ro.Word != "" {
 			ServerRoom(room, StrToJSON("room", "房间状态", "{'message':'ChooseCountdownStop'}"))
@@ -533,25 +533,20 @@ func OneGame(room Room) {
 		ServerRoom(room, StrToJSON("room", "画家", "{'message':'"+item.OpenID+"'}"))
 		ServerRoom(room, StrToJSON("system", "系统提示信息", "{'message':'房间公告: 第"+strconv.Itoa(l+1)+"回合,画师为"+item.OpenID+",请他开始选词'}"))
 		w := ChooseWordUnderTime(10, room, "ChooseWordCountdown")
-		log.Println("djdjkdjjjjjjjjj--------", w)
+		// log.Println("djdjkdjjjjjjjjj--------", w)
 		if w == false {
 			ServerRoom(room, StrToJSON("room", "房间状态", "{'message':'ChooseCountdownStop'}"))
 			Choose(room, GetWord())
 			ServerRoom(room, StrToJSON("system", "系统提示信息", "{'message':'房间公告: 选词完毕'}"))
 		}
 		time.Sleep(time.Second * 1)
-		room = GetRoom(room)
-		RoundTime(30, room)
-		room.GuessPeople = len(room.User) - 1
-		RoundOver(room)
-		room.Word = ""
-		UpdatePlayRoom(room)
-		if room.GuessPeople == 0 {
+		ok := RoundTime(30, room)
+		if ok == true {
+			ServerRoom(room, StrToJSON("room", "房间状态", "{'message':'DrawCountdownStop'}"))
 			room.GuessPeople = len(room.User) - 1
 			RoundOver(room)
 			room.Word = ""
 			UpdatePlayRoom(room)
-			continue
 		}
 		if len(room.User) < 2 {
 			room = GetRoom(room)
@@ -573,7 +568,7 @@ func RoundOver(room Room) {
 		item.Ok = ""
 		room.User[l] = item
 	}
-	log.Println("回合结束正确答案:", room.Word)
+	// log.Println("回合结束正确答案:", room.Word)
 	ServerRoom(room, StrToJSON("system", "系统提示信息", "{'message':'房间公告: 点赞开始'}"))
 	ServerRoom(room, StrToJSON("room", "房间状态", "{'message':'RoundOver'}"))
 	UnderTime(5, room, "RoundCountdown")
@@ -621,12 +616,13 @@ func UnderTime(count int, room Room, mes string) {
 }
 
 // 回合倒计时
-func RoundTime(count int, room Room) {
+func RoundTime(count int, room Room) bool {
 	ServerRoom(room, StrToJSON("room", "房间状态", "{'message':'DrawCountdown'}"))
 	for i := 0; i < count; i++ {
 		ServerRoom(room, StrToJSON("time", "系统时间提示", "{'message':'房间公告: 倒计时还有"+strconv.Itoa(count-i)+"秒'}"))
 		ServerRoom(room, StrToJSON("room", "倒计时", "{'message':'"+strconv.Itoa(count-i)+"'}"))
 		time.Sleep(time.Second * 1)
+		room = GetRoom(room)
 		if i == 0 {
 			ServerRoom(room, StrToJSON("room", "答案提示", "{'message':'答案提示: "+GetWordMess("first", room.Word)+"'}"))
 		}
@@ -636,9 +632,12 @@ func RoundTime(count int, room Room) {
 		if i == 20 {
 			ServerRoom(room, StrToJSON("room", "答案提示", "{'message':'答案提示: "+GetWordMess("third", room.Word)+"'}"))
 		}
+		if room.GuessPeople == 0 {
+			return true
+		}
 
 	}
-	ServerRoom(room, StrToJSON("room", "房间状态", "{'message':'DrawCountdownStop'}"))
+	return true
 }
 
 // 获取提示

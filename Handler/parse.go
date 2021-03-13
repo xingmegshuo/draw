@@ -46,11 +46,11 @@ func ParseData(con string, ws *websocket.Conn) {
 	// log.Println(info, "-------", data.Values)
 	switch data.Name {
 	case "login":
-		log.Println("登录操作:")
+		// log.Println("登录操作:")
 		mes := Login(info, ws)
 		Send(ws, mes)
 	case "upgrade":
-		log.Println("账号升级")
+		// log.Println("账号升级")
 		mes := Upgrade(info)
 		Send(ws, mes)
 	// case "back":
@@ -62,47 +62,47 @@ func ParseData(con string, ws *websocket.Conn) {
 	// 	mes := AddBack(info)
 	// 	Send(ws, mes)
 	case "record":
-		log.Println("获取最近战绩")
+		// log.Println("获取最近战绩")
 		mes := GetRecord(info)
 		Send(ws, mes)
 	case "recordRate":
-		log.Println("获取全部战斗")
+		// log.Println("获取全部战斗")
 		mes := GetRecordAll(info)
 		Send(ws, mes)
 	case "buddy":
-		log.Println("获取好友列表")
+		// log.Println("获取好友列表")
 		mes := GetBuddy(info)
 		Send(ws, mes)
 	case "newbuddy":
-		log.Println("获取好友申请")
+		// log.Println("获取好友申请")
 		mes := GetNewBuddy(info)
 		Send(ws, mes)
 	case "agreebuddy":
-		log.Println("同意好友申请")
+		// log.Println("同意好友申请")
 		mes := AgreeBuddy(info)
 		Send(ws, mes)
 	case "rcombuddy":
-		log.Println("获取好友推荐")
+		// log.Println("获取好友推荐")
 		mes := RecomBuddy(info)
 		Send(ws, mes)
 	case "addbuddy":
-		log.Println("添加好友申请")
+		// log.Println("添加好友申请")
 		mes := AddBuddy(info)
 		Send(ws, mes)
 	case "delbuddy":
-		log.Println("删除好友")
+		// log.Println("删除好友")
 		mes := DeleteBuddy(info)
 		Send(ws, mes)
 	case "chat":
-		log.Println("好友聊天")
+		// log.Println("好友聊天")
 		mes := Chat(info)
 		Send(ws, mes)
 	case "getUser":
-		log.Println("获取用户信息")
+		// log.Println("获取用户信息")
 		mes := GetUserMes(info)
 		Send(ws, mes)
 	case "room":
-		log.Println("开始游戏")
+		// log.Println("开始游戏")
 		mes := GameStart(info, ws)
 		Send(ws, mes)
 	case "gaming":
@@ -149,9 +149,14 @@ func RemoveRoom() {
 // 是否有无效用户
 func IsUser(room Room) {
 	for _, user := range room.User {
-		if _, ok := client_palyer[user.Ws]; !ok {
-			log.Println("此用户断开链接", user.OpenID)
-			OutLine(user.Ws)
+		if room.Status == true {
+			log.Println("用户断开连接,退出房间",user.OpenID)
+			Leave(room, user.OpenID)
+		} else {
+			if _, ok := client_palyer[user.Ws]; !ok {
+				log.Println("此用户断开链接,离线", user.OpenID)
+				OutLine(user.Ws)
+			}
 		}
 	}
 }

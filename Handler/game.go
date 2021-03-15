@@ -302,6 +302,7 @@ func Leave(room Room, user string) {
 		if change_owner == true && len(room.User) > 0 {
 			oldOwner := room.Owner
 			log.Println(oldOwner, "旧房主", room.User)
+			log.Println(len(room.User), room.User[0])
 			room.Owner = room.User[0].OpenID
 			newOwner := room.Owner
 			changeOwner(oldOwner, newOwner)

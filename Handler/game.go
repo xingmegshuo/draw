@@ -549,6 +549,7 @@ func ChooseWordUnderTime(count int, room Room, mes string) bool {
 		ServerRoom(room, StrToJSON("room", "倒计时", "{'message':'"+strconv.Itoa(count-i)+"'}"))
 		// log.Println(count - i)
 		ro := GetRoom(room)
+		log.Println("进入游戏逻辑,现在房间中的人数----------第bbbbbbbbbbbbbbbbbbbbbbb次输出", len(ro.User))
 		if len(ro.User) < 2 {
 			return false
 		}

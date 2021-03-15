@@ -538,7 +538,9 @@ func ChooseWordUnderTime(count int, room Room, mes string) bool {
 		// log.Println(count - i)
 		ro := GetRoom(room)
 		log.Println("进入游戏逻辑,现在房间中的人数----------第11111111111次输出", len(ro.User))
-
+		if len(ro.User) < 2 {
+			return false
+		}
 		if ro.Word != "" {
 			ServerRoom(room, StrToJSON("room", "房间状态", "{'message':'ChooseCountdownStop'}"))
 			ServerRoom(room, StrToJSON("system", "系统提示信息", "{'message':'房间公告: 选词完毕'}"))

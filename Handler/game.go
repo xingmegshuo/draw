@@ -149,7 +149,6 @@ func Init(ws *websocket.Conn, room Room) string {
 		room.User = append(room.User, player)
 	}
 	room.People = room.People - 1
-	log.Println(room.People)
 	if room.People == 5 {
 		room.Owner = player.OpenID
 	}
@@ -302,7 +301,7 @@ func Leave(room Room, user string) {
 		if change_owner == true && len(room.User) > 0 {
 			oldOwner := room.Owner
 			log.Println(oldOwner, "旧房主", room.User)
-			log.Println(len(room.User), room.User[0])
+			log.Println(len(room.User), room.User[0].OpenID)
 			room.Owner = room.User[0].OpenID
 			newOwner := room.Owner
 			changeOwner(oldOwner, newOwner)

@@ -547,6 +547,7 @@ func OneGame(room Room) {
 		if item.Status == "false" {
 			continue
 		}
+		room = GetRoom(room)
 		room.GuessPeople = len(room.User) - 1
 		room.Draw = item.OpenID
 		UpdatePlayRoom(room)
@@ -573,7 +574,6 @@ func OneGame(room Room) {
 			GameOver(room)
 			break
 		}
-
 	}
 	room = GetRoom(room)
 	GameOver(room)

@@ -158,8 +158,8 @@ func Init(ws *websocket.Conn, room Room) string {
 	}
 	log.Println("------------房间人员", len(room.User), "******")
 	ServerRoom(room, StrToJSON("system", "系统消息", "{'message':'房间公告:"+player.OpenID+"进入房间'}"))
-	RoomUser(room)
 	UpdatePlayRoom(room)
+	RoomUser(room)
 	return GetRoomID(room)
 }
 
@@ -202,7 +202,7 @@ func RoomUser(room Room) {
 
 // 房间内信息
 func ServerRoom(room Room, mes string) {
-	// room = GetRoom(room)
+	room = GetRoom(room)
 	for _, item := range room.User {
 		if item.Status != "false" {
 			Send(item.Ws, mes)
@@ -266,8 +266,8 @@ func Ready(room Room, user string, status string) {
 			room.User[l] = item
 		}
 	}
-	RoomUser(room)
 	UpdatePlayRoom(room)
+	RoomUser(room)
 }
 
 // 退出房间
@@ -390,8 +390,8 @@ func Guess(room Room, user string, word string) {
 	}
 	data := "{'status':'system','mes':'猜答案和交流','data':{'message':'" + str + "','user':'" + user + "'}}"
 	data = strings.Replace(data, "'", "\"", -1)
-	ServerRoom(room, data)
 	UpdatePlayRoom(room)
+	ServerRoom(room, data)
 }
 
 // 格式化返回数据
@@ -545,41 +545,39 @@ func ChooseWordUnderTime(count int, room Room, mes string) bool {
 
 // 游戏流程
 func OneGame(room Room) {
-	for l, item := range room.User {
-		room = GetRoom(room)
-		// if item.Status == "false" {
-		// 	continue
-		// }
-		room.GuessPeople = len(room.User) - 1
-		room.Draw = item.OpenID
-		UpdatePlayRoom(room)
-		ServerRoom(room, StrToJSON("room", "画家", "{'message':'"+item.OpenID+"'}"))
-		ServerRoom(room, StrToJSON("system", "系统提示信息", "{'message':'房间公告: 第"+strconv.Itoa(l+1)+"回合,画师为"+item.OpenID+",请他开始选词'}"))
-		room = GetRoom(room)
-		w := ChooseWordUnderTime(10, room, "ChooseWordCountdown")
-		if w == false {
-			ServerRoom(room, StrToJSON("room", "房间状态", "{'message':'ChooseCountdownStop'}"))
-			Choose(room, GetWord())
-			ServerRoom(room, StrToJSON("system", "系统提示信息", "{'message':'房间公告: 选词完毕'}"))
-		}
-		time.Sleep(time.Second * 1)
-		ok := RoundTime(30, room)
-		if ok == true {
-			room = GetRoom(room)
-			ServerRoom(room, StrToJSON("room", "房间状态", "{'message':'DrawCountdownStop'}"))
-			room.GuessPeople = len(room.User) - 1
-			RoundOver(room)
-			room.Word = ""
-			UpdatePlayRoom(room)
-		}
-		if len(room.User) < 2 {
-			room = GetRoom(room)
-			GameOver(room)
-			break
+	for l, ro := range PlayRoom {
+		if ro.Owner == room.Owner {
+			for i, item := range ro.User {
+				room.GuessPeople = len(ro.User) - 1
+				// if item.Status == "false" {
+				// 	continue
+				// }
+				ro.Draw = item.OpenID
+				ServerRoom(ro, StrToJSON("room", "画家", "{'message':'"+item.OpenID+"'}"))
+				ServerRoom(ro, StrToJSON("system", "系统提示信息", "{'message':'房间公告: 第"+strconv.Itoa(i+1)+"回合,画师为"+item.OpenID+",请他开始选词'}"))
+				w := ChooseWordUnderTime(10, ro, "ChooseWordCountdown")
+				if w == false {
+					ServerRoom(ro, StrToJSON("room", "房间状态", "{'message':'ChooseCountdownStop'}"))
+					Choose(ro, GetWord())
+					ServerRoom(ro, StrToJSON("system", "系统提示信息", "{'message':'房间公告: 选词完毕'}"))
+				}
+				time.Sleep(time.Second * 1)
+				ok := RoundTime(30, ro)
+				if ok == true {
+					ServerRoom(ro, StrToJSON("room", "房间状态", "{'message':'DrawCountdownStop'}"))
+					ro.GuessPeople = len(ro.User) - 1
+					RoundOver(ro)
+					ro.Word = ""
+					PlayRoom[l] = ro
+				}
+				if len(ro.User) < 2 {
+					GameOver(ro)
+					break
+				}
+			}
+			GameOver(ro)
 		}
 	}
-	room = GetRoom(room)
-	GameOver(room)
 }
 
 // 回合结束

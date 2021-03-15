@@ -439,6 +439,7 @@ func UnReadyAll(room Room) {
 // 是否有人取消准备
 func IsStart(room Room) bool {
 	room = GetRoom(room)
+	log.Println("进入开始游戏逻辑,现在房间中的人数----------第11111111111次输出", len(ro.User))
 	if len(room.User) < 2 {
 		return false
 	}
@@ -548,7 +549,6 @@ func ChooseWordUnderTime(count int, room Room, mes string) bool {
 		ServerRoom(room, StrToJSON("room", "倒计时", "{'message':'"+strconv.Itoa(count-i)+"'}"))
 		// log.Println(count - i)
 		ro := GetRoom(room)
-		log.Println("进入游戏逻辑,现在房间中的人数----------第11111111111次输出", len(ro.User))
 		if len(ro.User) < 2 {
 			return false
 		}

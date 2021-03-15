@@ -197,6 +197,7 @@ func RoomUser(room Room) {
 	}
 	str = str + "]}"
 	str = strings.Replace(str, "'", "\"", -1)
+	log.Println(str, len(room.User), "发送信息")
 	ServerRoom(room, str)
 }
 

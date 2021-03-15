@@ -151,7 +151,7 @@ func Init(ws *websocket.Conn, room Room) string {
 	room.People = room.People - 1
 	log.Println(room.People, "加入了1个人")
 	if room.People == 5 {
-		room.Owner = player.OpenID
+		room.Owner = room.User[0].OpenID
 		log.Println("给一个房主")
 	}
 	// if room.People == 0 {

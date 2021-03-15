@@ -64,7 +64,6 @@ func GameStart(mes []byte, ws *websocket.Conn) string {
 	Game.Search = "false"
 	var room Room
 	err := json.Unmarshal(mes, &Game)
-	// log.Println(Game.RoomID, Game.Type, "房间的情况")
 	if err != nil {
 		log.Println("解析room:", err.Error())
 	}
@@ -150,20 +149,15 @@ func Init(ws *websocket.Conn, room Room) string {
 		room.User = append(room.User, player)
 	}
 	room.People = room.People - 1
-	log.Println(room.People, "加入了1个人")
 	if room.People == 5 {
 		room.Owner = room.User[0].OpenID
-		log.Println("给一个房主", room.Owner, "------------------", player.OpenID)
 	}
 	// if room.People == 0 {
 	// 	log.Println("人满了")
 	// 	room.Status = false
 	// }
-	log.Println("------------房间人员", room.User, "******", room.Owner)
-	log.Println(room.Owner, "first")
 	UpdatePlayRoom(room)
 	room = GetRoom(room)
-	ServerRoom(room, StrToJSON("system", "系统消息", "{'message':'房间公告:"+player.OpenID+"进入房间'}"))
 	// log.Println(room.Owner, "2")
 	RoomUser(room)
 	return GetRoomID(room)
@@ -282,7 +276,6 @@ func Leave(room Room, user string) {
 		if u.OpenID == user {
 			client_user[u.Ws] = user
 			delete(client_palyer, u.Ws)
-			log.Println("删除--------离开删除", user, "在线玩家状态", client_palyer, "在线用户", client_user)
 			break
 		}
 	}
@@ -295,7 +288,6 @@ func Leave(room Room, user string) {
 		}
 
 	} else {
-		log.Println(len(room.User), "之前几个用户", len(PlayRoom))
 		change_owner := false
 		for l, item := range room.User {
 			if item.OpenID == user {
@@ -311,12 +303,9 @@ func Leave(room Room, user string) {
 		}
 		if change_owner == true && len(room.User) > 0 {
 			oldOwner := room.Owner
-			log.Println(oldOwner, "旧房主", room.User)
-			log.Println(len(room.User), room.User[0].OpenID)
 			room.Owner = room.User[0].OpenID
 			newOwner := room.Owner
 			changeOwner(oldOwner, newOwner)
-			log.Println(newOwner, "新房主", room.User)
 		}
 		UpdatePlayRoom(room)
 		room = GetRoom(room)
@@ -324,7 +313,6 @@ func Leave(room Room, user string) {
 			room.People = room.People + 1
 			RoomUser(room)
 			ServerRoom(room, StrToJSON("system", "系统消息", "{'message':'房间公告:"+user+"退出房间'}"))
-			log.Println(len(room.User), "后来几个用户", "几个房间", len(PlayRoom), user, "退出房间")
 		}
 	}
 }

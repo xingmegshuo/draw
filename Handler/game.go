@@ -272,6 +272,7 @@ func Ready(room Room, user string, status string) {
 
 // 退出房间
 func Leave(room Room, user string) {
+	log.Println("退出房间----------------------")
 	for _, u := range room.User {
 		if u.OpenID == user {
 			client_user[u.Ws] = user
@@ -296,6 +297,7 @@ func Leave(room Room, user string) {
 			}
 			if room.Owner == user && len(room.User) > 1 {
 				change_owner = true
+				log.Println("房主退出房间----------------------")
 			}
 		}
 		if a != -1 {
@@ -439,7 +441,6 @@ func UnReadyAll(room Room) {
 // 是否有人取消准备
 func IsStart(room Room) bool {
 	room = GetRoom(room)
-	log.Println("进入开始游戏逻辑,现在房间中的人数----------第11111111111次输出", len(room.User))
 	if len(room.User) < 2 {
 		return false
 	}
@@ -550,7 +551,6 @@ func ChooseWordUnderTime(count int, room Room, mes string) bool {
 		ServerRoom(room, StrToJSON("room", "倒计时", "{'message':'"+strconv.Itoa(count-i)+"'}"))
 		// log.Println(count - i)
 		ro := GetRoom(room)
-		log.Println("进入游戏逻辑,现在房间中的人数----------第bbbbbbbbbbbbbbbbbbbbbbb次输出", len(ro.User))
 		if len(ro.User) < 2 {
 			return false
 		}
@@ -566,22 +566,17 @@ func ChooseWordUnderTime(count int, room Room, mes string) bool {
 
 // 游戏流程
 func OneGame(room Room) {
-	log.Println("进入游戏逻辑,现在房间中的人数----------第一次输出", len(room.User))
-	go listen(len(room.User), room)
+	// go listen(len(room.User), room)
 	for _, ro := range PlayRoom {
 		if ro.Owner == room.Owner {
-			log.Println("进入游戏逻辑,现在房间中的人数----------第二次输出", len(ro.User))
 			for i, item := range ro.User {
 				ro.GuessPeople = len(ro.User) - 1
 				room.Draw = item.OpenID
-				log.Println("进入游戏逻辑,现在房间中的人数----------第3次输出", len(ro.User))
 				UpdatePlayRoom(ro)
-				log.Println("进入游戏逻辑,现在房间中的人数----------第4次输出", len(ro.User))
 				ServerRoom(ro, StrToJSON("room", "画家", "{'message':'"+item.OpenID+"'}"))
 				ServerRoom(ro, StrToJSON("system", "系统提示信息", "{'message':'房间公告: 第"+strconv.Itoa(i+1)+"回合,画师为"+item.OpenID+",请他开始选词'}"))
 				w := ChooseWordUnderTime(10, ro, "ChooseWordCountdown")
 				ro = GetRoom(ro)
-				log.Println("进入游戏逻辑,现在房间中的人数----------第5次输出", len(ro.User))
 				if len(ro.User) < 2 {
 					GameOver(ro)
 					break

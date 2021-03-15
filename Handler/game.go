@@ -162,7 +162,6 @@ func Init(ws *websocket.Conn, room Room) string {
 	log.Println("------------房间人员", room.User, "******", room.Owner)
 	log.Println(room.Owner, "first")
 	UpdatePlayRoom(room)
-	log.Println("加入--------加入", len(PlayRoom), "在线玩家状态", len(client_palyer), client_palyer, "在线用户", len(client_user), client_user)
 	room = GetRoom(room)
 	ServerRoom(room, StrToJSON("system", "系统消息", "{'message':'房间公告:"+player.OpenID+"进入房间'}"))
 	// log.Println(room.Owner, "2")
@@ -302,8 +301,6 @@ func Leave(room Room, user string) {
 			if item.OpenID == user {
 				a = l
 				room.People = room.People + 1
-				client_user[item.Ws] = client_palyer[item.Ws]
-				delete(client_palyer, item.Ws)
 			}
 			if room.Owner == user && len(room.User) > 1 {
 				change_owner = true

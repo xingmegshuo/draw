@@ -152,15 +152,16 @@ func Init(ws *websocket.Conn, room Room) string {
 	log.Println(room.People, "加入了1个人")
 	if room.People == 5 {
 		room.Owner = player.OpenID
+		log.Println("给一个房主")
 	}
 	// if room.People == 0 {
 	// 	log.Println("人满了")
 	// 	room.Status = false
 	// }
 	log.Println("------------房间人员", len(room.User), "******", room.Owner)
+	log.Println(room.Owner, "first")
 	UpdatePlayRoom(room)
 	room = GetRoom(room)
-	log.Println(room.Owner, "first")
 	ServerRoom(room, StrToJSON("system", "系统消息", "{'message':'房间公告:"+player.OpenID+"进入房间'}"))
 	log.Println(room.Owner, "2")
 	RoomUser(room)
@@ -301,10 +302,11 @@ func Leave(room Room, user string) {
 		if a != -1 {
 			room.User = append(room.User[:a], room.User[a+1:]...)
 		}
+		UpdatePlayRoom(room)
+		room = GetRoom(room)
 		if change_owner == true && len(room.User) > 0 {
 			oldOwner := room.Owner
 			log.Println(oldOwner, "旧房主", room.User)
-			time.Sleep(time.Second * 1)
 			log.Println(len(room.User), room.User[0].OpenID)
 			room.Owner = room.User[0].OpenID
 			newOwner := room.Owner
@@ -313,8 +315,6 @@ func Leave(room Room, user string) {
 		}
 		if len(room.User) >= 1 {
 			room.People = room.People + 1
-			UpdatePlayRoom(room)
-			room = GetRoom(room)
 			RoomUser(room)
 			ServerRoom(room, StrToJSON("system", "系统消息", "{'message':'房间公告:"+user+"退出房间'}"))
 			log.Println(len(room.User), "后来几个用户", "几个房间", len(PlayRoom), user, "退出房间")

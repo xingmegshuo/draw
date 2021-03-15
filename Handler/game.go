@@ -546,55 +546,48 @@ func ChooseWordUnderTime(count int, room Room, mes string) bool {
 // 游戏流程
 func OneGame(room Room) {
 	log.Println("进入游戏逻辑,现在房间中的人数----------1", len(room.User))
-	go listen(len(room.User), room.Owner)
-	for l, ro := range PlayRoom {
-		if ro.Owner == room.Owner {
-			for i, item := range ro.User {
-				room.GuessPeople = len(ro.User) - 1
-				// if item.Status == "false" {
-				// 	continue
-				// }
-				ro.Draw = item.OpenID
-				ServerRoom(ro, StrToJSON("room", "画家", "{'message':'"+item.OpenID+"'}"))
-				ServerRoom(ro, StrToJSON("system", "系统提示信息", "{'message':'房间公告: 第"+strconv.Itoa(i+1)+"回合,画师为"+item.OpenID+",请他开始选词'}"))
-				log.Println("进入游戏逻辑,现在房间中的人数----------2", len(ro.User))
-				w := ChooseWordUnderTime(10, ro, "ChooseWordCountdown")
-				if w == false {
-					ServerRoom(ro, StrToJSON("room", "房间状态", "{'message':'ChooseCountdownStop'}"))
-					Choose(ro, GetWord())
-					ServerRoom(ro, StrToJSON("system", "系统提示信息", "{'message':'房间公告: 选词完毕'}"))
-					log.Println("进入游戏逻辑,现在房间中的人数----------3", len(ro.User))
-				}
-				time.Sleep(time.Second * 1)
-				ok := RoundTime(30, ro)
-				if ok == true {
-					ServerRoom(ro, StrToJSON("room", "房间状态", "{'message':'DrawCountdownStop'}"))
-					ro.GuessPeople = len(ro.User) - 1
-					RoundOver(ro)
-					ro.Word = ""
-					PlayRoom[l] = ro
-				}
-				log.Println("进入游戏逻辑,现在房间中的人数----------4", len(ro.User))
-				if len(ro.User) < 2 {
-					GameOver(ro)
-					break
-				}
-			}
-			GameOver(ro)
+	go listen(len(room.User), room)
+
+	for i, item := range room.User {
+		room.GuessPeople = len(room.User) - 1
+		// if item.Status == "false" {
+		// 	continue
+		// }
+		room.Draw = item.OpenID
+		ServerRoom(room, StrToJSON("room", "画家", "{'message':'"+item.OpenID+"'}"))
+		ServerRoom(room, StrToJSON("system", "系统提示信息", "{'message':'房间公告: 第"+strconv.Itoa(i+1)+"回合,画师为"+item.OpenID+",请他开始选词'}"))
+		log.Println("进入游戏逻辑,现在房间中的人数----------2", len(room.User))
+		w := ChooseWordUnderTime(10, room, "ChooseWordCountdown")
+		if w == false {
+			ServerRoom(room, StrToJSON("room", "房间状态", "{'message':'ChooseCountdownStop'}"))
+			Choose(room, GetWord())
+			ServerRoom(room, StrToJSON("system", "系统提示信息", "{'message':'房间公告: 选词完毕'}"))
+			log.Println("进入游戏逻辑,现在房间中的人数----------3", len(room.User))
+		}
+		time.Sleep(time.Second * 1)
+		ok := RoundTime(30, room)
+		if ok == true {
+			ServerRoom(room, StrToJSON("room", "房间状态", "{'message':'DrawCountdownStop'}"))
+			room.GuessPeople = len(room.User) - 1
+			RoundOver(room)
+			room.Word = ""
+		}
+		log.Println("进入游戏逻辑,现在房间中的人数----------4", len(room.User))
+		if len(room.User) < 2 {
+			GameOver(room)
+			break
 		}
 	}
+	GameOver(room)
 }
 
 // 监听游戏中的退出
-func listen(l int, ro string) {
+func listen(l int, ro Room) {
 	for {
-		for _, r := range PlayRoom {
-			if r.Owner == ro {
-				if len(r.User) != l {
-					log.Println("游戏过程中发生了改变----------------------------------")
-					break
-				}
-			}
+		ro = GetRoom(ro)
+		if len(ro.User) != l {
+			log.Println("游戏过程中发生了改变----------------------------------")
+			break
 		}
 	}
 }

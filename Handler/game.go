@@ -90,6 +90,7 @@ func IsIn(user string, ws *websocket.Conn) Player {
 		for _, item := range ro.User {
 			if item.OpenID == user {
 				log.Println("欢迎重新链接", item.OpenID)
+				item.Ws = ws
 				return item
 			}
 		}
@@ -282,8 +283,7 @@ func Leave(room Room, user string) {
 		if u.OpenID == user {
 			client_user[u.Ws] = user
 			delete(client_palyer, u.Ws)
-			log.Println("更改之后", "玩家", client_user[u.Ws], "用户", client_palyer[u.Ws])
-			log.Println("删除--------离开删除", len(PlayRoom), "在线玩家状态", len(client_palyer), client_palyer, "在线用户", len(client_user), client_user)
+			log.Println("删除--------离开删除", user, "在线玩家状态", client_palyer, "在线用户", client_user)
 			break
 		}
 	}

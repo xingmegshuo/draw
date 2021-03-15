@@ -288,14 +288,14 @@ func Leave(room Room, user string) {
 	if a != -1 {
 		room.User = append(room.User[:a], room.User[a+1:]...)
 	}
-	log.Println(room.Owner, "旧房主", room.User)
 	if change_owner == true && len(room.User) > 0 {
 		oldOwner := room.Owner
+		log.Println(oldOwner, "旧房主", room.User)
 		room.Owner = room.User[0].OpenID
 		newOwner := room.Owner
 		changeOwner(oldOwner, newOwner)
+		log.Println(newOwner, "新房主", room.User)
 	}
-	log.Println(room.Owner, "新房主", room.User)
 	UpdatePlayRoom(room)
 	room = GetRoom(room)
 	log.Println(len(room.User), "后来几个用户", "几个房间", len(PlayRoom), user, "退出房间")
@@ -467,8 +467,9 @@ func Start(room Room, user string) {
 			ServerRoom(room, StrToJSON("room", "房间状态", "{'message':'StartCountdownStop'}"))
 			ServerRoom(room, StrToJSON("room", "房间状态", "{'message':'GameSuccess'}"))
 			ServerRoom(room, StrToJSON("system", "系统提示信息", "{'message':'房间公告: 游戏正式开始'}"))
-			log.Println("开始游戏")
+			log.Println("开始游戏---------------修改房间状态不可加入")
 			room.Status = false
+			UpdatePlayRoom(room)
 			OneGame(room)
 		}
 	} else {
@@ -547,14 +548,12 @@ func OneGame(room Room) {
 		if item.Status == "false" {
 			continue
 		}
-		room = GetRoom(room)
 		room.GuessPeople = len(room.User) - 1
 		room.Draw = item.OpenID
 		UpdatePlayRoom(room)
 		ServerRoom(room, StrToJSON("room", "画家", "{'message':'"+item.OpenID+"'}"))
 		ServerRoom(room, StrToJSON("system", "系统提示信息", "{'message':'房间公告: 第"+strconv.Itoa(l+1)+"回合,画师为"+item.OpenID+",请他开始选词'}"))
 		w := ChooseWordUnderTime(10, room, "ChooseWordCountdown")
-		// log.Println("djdjkdjjjjjjjjj--------", w)
 		if w == false {
 			ServerRoom(room, StrToJSON("room", "房间状态", "{'message':'ChooseCountdownStop'}"))
 			Choose(room, GetWord())

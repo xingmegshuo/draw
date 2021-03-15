@@ -480,6 +480,7 @@ func Start(room Room, user string) {
 	if room.Owner == user && a >= 1 && room.People <= 4 {
 		ServerRoom(room, StrToJSON("system", "系统提示信息", "{'message':'房间公告: 游戏五秒后开始'}"))
 		status := IsStartUnderTime(5, room, "{'message':'GameCountdown'}")
+		room = GetRoom(room)
 		if status {
 			ServerRoom(room, StrToJSON("room", "房间状态", "{'message':'StartCountdownStop'}"))
 			ServerRoom(room, StrToJSON("room", "房间状态", "{'message':'GameSuccess'}"))
@@ -567,7 +568,6 @@ func ChooseWordUnderTime(count int, room Room, mes string) bool {
 func OneGame(room Room) {
 	log.Println("进入游戏逻辑,现在房间中的人数----------第一次输出", len(room.User))
 	go listen(len(room.User), room)
-
 	for _, ro := range PlayRoom {
 		if ro.Owner == room.Owner {
 			log.Println("进入游戏逻辑,现在房间中的人数----------第二次输出", len(ro.User))

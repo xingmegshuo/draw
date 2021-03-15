@@ -280,10 +280,10 @@ func Ready(room Room, user string, status string) {
 func Leave(room Room, user string) {
 	for _, u := range room.User {
 		if u.OpenID == user {
-			log.Println("更改之前", client_user[u.Ws], client_palyer[u.Ws])
+			log.Println("更改之前", "玩家", client_user[u.Ws], "用户", client_palyer[u.Ws])
 			client_user[u.Ws] = client_palyer[u.Ws]
 			delete(client_palyer, u.Ws)
-			log.Println("更改之后", client_user[u.Ws], client_palyer[u.Ws])
+			log.Println("更改之前", "玩家", client_user[u.Ws], "用户", client_palyer[u.Ws])
 			log.Println("删除--------离开删除", len(PlayRoom), "在线玩家状态", len(client_palyer), client_palyer, "在线用户", len(client_user), client_user)
 		}
 	}

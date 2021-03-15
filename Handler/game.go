@@ -153,6 +153,7 @@ func Init(ws *websocket.Conn, room Room) string {
 		room.Owner = player.OpenID
 	}
 	if room.People == 0 {
+		log.Println("人满了")
 		room.Status = false
 	}
 	log.Println("------------房间人员", len(room.User), "******")
@@ -466,6 +467,7 @@ func Start(room Room, user string) {
 			ServerRoom(room, StrToJSON("room", "房间状态", "{'message':'StartCountdownStop'}"))
 			ServerRoom(room, StrToJSON("room", "房间状态", "{'message':'GameSuccess'}"))
 			ServerRoom(room, StrToJSON("system", "系统提示信息", "{'message':'房间公告: 游戏正式开始'}"))
+			log.Println("开始游戏")
 			room.Status = false
 			OneGame(room)
 		}

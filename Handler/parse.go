@@ -137,7 +137,7 @@ func RemoveRoom() {
 			log.Println("删除房间")
 		} else {
 			IsUser(ro)
-			log.Println("还有几个人", len(ro.User))
+			// log.Println("还有几个人", len(ro.User))
 			UpdatePlayRoom(ro)
 			if len(ro.User) > 1 {
 				RoomUser(ro)

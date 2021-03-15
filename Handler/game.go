@@ -149,6 +149,7 @@ func Init(ws *websocket.Conn, room Room) string {
 		room.User = append(room.User, player)
 	}
 	room.People = room.People - 1
+	log.Println(room.People, "加入了1个人")
 	if room.People == 5 {
 		room.Owner = player.OpenID
 	}

@@ -157,8 +157,9 @@ func Init(ws *websocket.Conn, room Room) string {
 		room.Status = false
 	}
 	log.Println("------------房间人员", len(room.User), "******")
-	ServerRoom(room, StrToJSON("system", "系统消息", "{'message':'房间公告:"+player.OpenID+"进入房间'}"))
 	UpdatePlayRoom(room)
+	room = GetRoom(room)
+	ServerRoom(room, StrToJSON("system", "系统消息", "{'message':'房间公告:"+player.OpenID+"进入房间'}"))
 	RoomUser(room)
 	return GetRoomID(room)
 }

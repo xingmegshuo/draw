@@ -545,6 +545,8 @@ func ChooseWordUnderTime(count int, room Room, mes string) bool {
 
 // 游戏流程
 func OneGame(room Room) {
+	log.Println("进入游戏逻辑,现在房间中的人数----------1", len(room.User))
+	go listen(len(room.User), room.Owner)
 	for l, ro := range PlayRoom {
 		if ro.Owner == room.Owner {
 			for i, item := range ro.User {
@@ -555,11 +557,13 @@ func OneGame(room Room) {
 				ro.Draw = item.OpenID
 				ServerRoom(ro, StrToJSON("room", "画家", "{'message':'"+item.OpenID+"'}"))
 				ServerRoom(ro, StrToJSON("system", "系统提示信息", "{'message':'房间公告: 第"+strconv.Itoa(i+1)+"回合,画师为"+item.OpenID+",请他开始选词'}"))
+				log.Println("进入游戏逻辑,现在房间中的人数----------2", len(ro.User))
 				w := ChooseWordUnderTime(10, ro, "ChooseWordCountdown")
 				if w == false {
 					ServerRoom(ro, StrToJSON("room", "房间状态", "{'message':'ChooseCountdownStop'}"))
 					Choose(ro, GetWord())
 					ServerRoom(ro, StrToJSON("system", "系统提示信息", "{'message':'房间公告: 选词完毕'}"))
+					log.Println("进入游戏逻辑,现在房间中的人数----------3", len(ro.User))
 				}
 				time.Sleep(time.Second * 1)
 				ok := RoundTime(30, ro)
@@ -570,12 +574,27 @@ func OneGame(room Room) {
 					ro.Word = ""
 					PlayRoom[l] = ro
 				}
+				log.Println("进入游戏逻辑,现在房间中的人数----------4", len(ro.User))
 				if len(ro.User) < 2 {
 					GameOver(ro)
 					break
 				}
 			}
 			GameOver(ro)
+		}
+	}
+}
+
+// 监听游戏中的退出
+func listen(l int, ro string) {
+	for {
+		for _, r := range PlayRoom {
+			if r.Owner == ro {
+				if len(r.User) != l {
+					log.Println("游戏过程中发生了改变----------------------------------")
+					break
+				}
+			}
 		}
 	}
 }

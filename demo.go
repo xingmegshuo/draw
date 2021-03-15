@@ -9,9 +9,37 @@
 package main
 
 import (
-	"fmt"
+	"log"
+	"time"
 )
 
+var a []int
+
 func main() {
-	fmt.Println(len("你好么大"))
+	a = []int{1, 2, 3, 4}
+	// log.Println(a)
+	go change()
+	consloe()
+}
+
+// 循环输出
+func consloe() {
+	for _, i := range a {
+		log.Println(i)
+	}
+}
+
+// 输出中修改值
+func change() {
+	for {
+		for l, b := range a {
+			if b == 2 {
+				a[l] = 5
+				log.Println("修改")
+				// log.Println(a)
+				time.Sleep(time.Second * 1)
+				break
+			}
+		}
+	}
 }

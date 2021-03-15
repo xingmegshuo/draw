@@ -570,6 +570,10 @@ func OneGame(room Room) {
 				w := ChooseWordUnderTime(10, room, "ChooseWordCountdown")
 				ro = GetRoom(ro)
 				log.Println("进入游戏逻辑,现在房间中的人数----------第5次输出", len(ro.User))
+				if len(ro.User) < 2 {
+					GameOver(room)
+					break
+				}
 				if w == false {
 					ServerRoom(room, StrToJSON("room", "房间状态", "{'message':'ChooseCountdownStop'}"))
 					Choose(room, GetWord())
@@ -584,12 +588,9 @@ func OneGame(room Room) {
 					room.Word = ""
 					UpdatePlayRoom(room)
 				}
+
 			}
 			GameOver(room)
-			if len(ro.User) < 2 {
-				GameOver(room)
-				break
-			}
 
 		}
 	}

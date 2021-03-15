@@ -150,14 +150,14 @@ func RemoveRoom() {
 func IsUser(room Room) {
 	for _, user := range room.User {
 		log.Println(room.Status)
-		if room.Status == true {
-			log.Println("用户断开连接,退出房间", user.OpenID)
-			Leave(room, user.OpenID)
-		} else {
-			if _, ok := client_palyer[user.Ws]; !ok {
-				log.Println("此用户断开链接,离线", user.OpenID)
-				OutLine(user.Ws)
-			}
-		}
+		// if room.Status == true {
+		log.Println("用户断开连接,退出房间", user.OpenID)
+		Leave(room, user.OpenID)
+		// } else {
+		// 	if _, ok := client_palyer[user.Ws]; !ok {
+		// 		log.Println("此用户断开链接,离线", user.OpenID)
+		// 		OutLine(user.Ws)
+		// 	}
+		// }
 	}
 }

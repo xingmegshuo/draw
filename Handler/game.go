@@ -277,6 +277,12 @@ func Ready(room Room, user string, status string) {
 
 // 退出房间
 func Leave(room Room, user string) {
+	for _, u := range room.User {
+		if u.OpenID == user {
+			client_user[u.Ws] = client_palyer[u.Ws]
+			delete(client_palyer, u.Ws)
+		}
+	}
 	a := -1
 	if len(room.User) <= 1 {
 		for l, ro := range PlayRoom {

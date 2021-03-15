@@ -273,36 +273,44 @@ func Ready(room Room, user string, status string) {
 // 退出房间
 func Leave(room Room, user string) {
 	a := -1
-	log.Println(len(room.User), "之前几个用户", len(PlayRoom))
-	change_owner := false
-	for l, item := range room.User {
-		if item.OpenID == user {
-			a = l
-			room.People = room.People + 1
-			client_user[item.Ws] = client_palyer[item.Ws]
-			delete(client_palyer, item.Ws)
+	if len(room.User) <= 1 {
+		for l, ro := range PlayRoom {
+			if ro.Owner == room.Owner {
+				delete(PlayRoom, l)
+			}
 		}
-		if room.Owner == user && len(room.User) > 1 {
-			change_owner = true
+	} else {
+		log.Println(len(room.User), "之前几个用户", len(PlayRoom))
+		change_owner := false
+		for l, item := range room.User {
+			if item.OpenID == user {
+				a = l
+				room.People = room.People + 1
+				client_user[item.Ws] = client_palyer[item.Ws]
+				delete(client_palyer, item.Ws)
+			}
+			if room.Owner == user && len(room.User) > 1 {
+				change_owner = true
+			}
 		}
-	}
-	if a != -1 {
-		room.User = append(room.User[:a], room.User[a+1:]...)
-	}
-	if change_owner == true && len(room.User) > 0 {
-		oldOwner := room.Owner
-		log.Println(oldOwner, "旧房主", room.User)
-		room.Owner = room.User[0].OpenID
-		newOwner := room.Owner
-		changeOwner(oldOwner, newOwner)
-		log.Println(newOwner, "新房主", room.User)
-	}
-	UpdatePlayRoom(room)
-	room = GetRoom(room)
-	log.Println(len(room.User), "后来几个用户", "几个房间", len(PlayRoom), user, "退出房间")
-	if len(room.User) >= 1 {
-		RoomUser(room)
-		ServerRoom(room, StrToJSON("system", "系统消息", "{'message':'房间公告:"+user+"退出房间'}"))
+		if a != -1 {
+			room.User = append(room.User[:a], room.User[a+1:]...)
+		}
+		if change_owner == true && len(room.User) > 0 {
+			oldOwner := room.Owner
+			log.Println(oldOwner, "旧房主", room.User)
+			room.Owner = room.User[0].OpenID
+			newOwner := room.Owner
+			changeOwner(oldOwner, newOwner)
+			log.Println(newOwner, "新房主", room.User)
+		}
+		if len(room.User) >= 1 {
+			UpdatePlayRoom(room)
+			room = GetRoom(room)
+			RoomUser(room)
+			ServerRoom(room, StrToJSON("system", "系统消息", "{'message':'房间公告:"+user+"退出房间'}"))
+			log.Println(len(room.User), "后来几个用户", "几个房间", len(PlayRoom), user, "退出房间")
+		}
 	}
 }
 

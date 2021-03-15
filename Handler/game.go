@@ -298,7 +298,7 @@ func Leave(room Room, user string) {
 	log.Println(room.Owner, "新房主", room.User)
 	UpdatePlayRoom(room)
 	room = GetRoom(room)
-	log.Println(len(room.User), "后来几个用户", "几个房间", len(PlayRoom))
+	log.Println(len(room.User), "后来几个用户", "几个房间", len(PlayRoom), user, "退出房间")
 	if len(room.User) >= 1 {
 		RoomUser(room)
 		ServerRoom(room, StrToJSON("system", "系统消息", "{'message':'房间公告:"+user+"退出房间'}"))

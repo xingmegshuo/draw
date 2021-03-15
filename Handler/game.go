@@ -550,20 +550,25 @@ func OneGame(room Room) {
 
 	for i, item := range room.User {
 		room.GuessPeople = len(room.User) - 1
-		// if item.Status == "false" {
-		// 	continue
-		// }
 		room.Draw = item.OpenID
+		UpdatePlayRoom(room)
+		room = GetRoom(room)
 		ServerRoom(room, StrToJSON("room", "画家", "{'message':'"+item.OpenID+"'}"))
 		ServerRoom(room, StrToJSON("system", "系统提示信息", "{'message':'房间公告: 第"+strconv.Itoa(i+1)+"回合,画师为"+item.OpenID+",请他开始选词'}"))
 		log.Println("进入游戏逻辑,现在房间中的人数----------2", len(room.User))
 		w := ChooseWordUnderTime(10, room, "ChooseWordCountdown")
+		UpdatePlayRoom(room)
+		room = GetRoom(room)
 		if w == false {
+			UpdatePlayRoom(room)
+			room = GetRoom(room)
 			ServerRoom(room, StrToJSON("room", "房间状态", "{'message':'ChooseCountdownStop'}"))
 			Choose(room, GetWord())
 			ServerRoom(room, StrToJSON("system", "系统提示信息", "{'message':'房间公告: 选词完毕'}"))
 			log.Println("进入游戏逻辑,现在房间中的人数----------3", len(room.User))
 		}
+		UpdatePlayRoom(room)
+		room = GetRoom(room)
 		time.Sleep(time.Second * 1)
 		ok := RoundTime(30, room)
 		if ok == true {
@@ -571,6 +576,8 @@ func OneGame(room Room) {
 			room.GuessPeople = len(room.User) - 1
 			RoundOver(room)
 			room.Word = ""
+			UpdatePlayRoom(room)
+			room = GetRoom(room)
 		}
 		log.Println("进入游戏逻辑,现在房间中的人数----------4", len(room.User))
 		if len(room.User) < 2 {

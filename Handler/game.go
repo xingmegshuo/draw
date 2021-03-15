@@ -537,6 +537,8 @@ func ChooseWordUnderTime(count int, room Room, mes string) bool {
 		ServerRoom(room, StrToJSON("room", "倒计时", "{'message':'"+strconv.Itoa(count-i)+"'}"))
 		// log.Println(count - i)
 		ro := GetRoom(room)
+		log.Println("进入游戏逻辑,现在房间中的人数----------第11111111111次输出", len(ro.User))
+
 		if ro.Word != "" {
 			ServerRoom(room, StrToJSON("room", "房间状态", "{'message':'ChooseCountdownStop'}"))
 			ServerRoom(room, StrToJSON("system", "系统提示信息", "{'message':'房间公告: 选词完毕'}"))
@@ -564,12 +566,13 @@ func OneGame(room Room) {
 				ServerRoom(room, StrToJSON("room", "画家", "{'message':'"+item.OpenID+"'}"))
 				ServerRoom(room, StrToJSON("system", "系统提示信息", "{'message':'房间公告: 第"+strconv.Itoa(i+1)+"回合,画师为"+item.OpenID+",请他开始选词'}"))
 				w := ChooseWordUnderTime(10, room, "ChooseWordCountdown")
+				ro = GetRoom(ro)
+				log.Println("进入游戏逻辑,现在房间中的人数----------第5次输出", len(ro.User))
 				if w == false {
 					ServerRoom(room, StrToJSON("room", "房间状态", "{'message':'ChooseCountdownStop'}"))
 					Choose(room, GetWord())
 					ServerRoom(room, StrToJSON("system", "系统提示信息", "{'message':'房间公告: 选词完毕'}"))
 				}
-				log.Println("进入游戏逻辑,现在房间中的人数----------第5次输出", len(ro.User))
 				time.Sleep(time.Second * 1)
 				ok := RoundTime(30, room)
 				if ok == true {

@@ -307,6 +307,7 @@ func Leave(room Room, user string) {
 			log.Println(newOwner, "新房主", room.User)
 		}
 		if len(room.User) >= 1 {
+			room.People = room.People + 1
 			UpdatePlayRoom(room)
 			room = GetRoom(room)
 			RoomUser(room)

@@ -102,7 +102,7 @@ func SearchRoom(roomID string) (Room, bool) {
 	for l, item := range PlayRoom {
 		if Game.Search == "true" {
 			log.Println("携带房间号搜索--------------------------")
-			if l == roomID && item.Status == true {
+			if l == roomID && item.Status == true && item.People > 0 {
 				return PlayRoom[l], true
 			}
 		} else {
@@ -152,11 +152,11 @@ func Init(ws *websocket.Conn, room Room) string {
 	if room.People == 5 {
 		room.Owner = player.OpenID
 	}
-	if room.People == 0 {
-		log.Println("人满了")
-		room.Status = false
-	}
-	log.Println("------------房间人员", len(room.User), "******")
+	// if room.People == 0 {
+	// 	log.Println("人满了")
+	// 	room.Status = false
+	// }
+	log.Println("------------房间人员", len(room.User), "******", room.Owner)
 	UpdatePlayRoom(room)
 	room = GetRoom(room)
 	ServerRoom(room, StrToJSON("system", "系统消息", "{'message':'房间公告:"+player.OpenID+"进入房间'}"))

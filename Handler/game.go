@@ -281,7 +281,7 @@ func Leave(room Room, user string) {
 			client_user[item.Ws] = client_palyer[item.Ws]
 			delete(client_palyer, item.Ws)
 		}
-		if room.Owner == user && len(room.User) > 1 {
+		if room.Owner == user && len(room.User) > 0 {
 			change_owner = true
 		}
 	}
@@ -289,7 +289,7 @@ func Leave(room Room, user string) {
 		room.User = append(room.User[:a], room.User[a+1:]...)
 	}
 	log.Println(room.Owner, "旧房主", room.User)
-	if change_owner == true && len(room.User) > 1 {
+	if change_owner == true && len(room.User) > 0 {
 		oldOwner := room.Owner
 		room.Owner = room.User[0].OpenID
 		newOwner := room.Owner

@@ -197,13 +197,12 @@ func RoomUser(room Room) {
 	}
 	str = str + "]}"
 	str = strings.Replace(str, "'", "\"", -1)
-	log.Println(str, len(room.User), "发送信息")
 	ServerRoom(room, str)
 }
 
 // 房间内信息
 func ServerRoom(room Room, mes string) {
-	room = GetRoom(room)
+	// room = GetRoom(room)
 	for _, item := range room.User {
 		if item.Status != "false" {
 			Send(item.Ws, mes)

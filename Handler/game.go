@@ -288,14 +288,14 @@ func Leave(room Room, user string) {
 	if a != -1 {
 		room.User = append(room.User[:a], room.User[a+1:]...)
 	}
-	log.Println(room.Owner, "就房主")
+	log.Println(room.Owner, "旧房主", room.User)
 	if change_owner == true {
 		oldOwner := room.Owner
 		room.Owner = room.User[0].OpenID
 		newOwner := room.Owner
 		changeOwner(oldOwner, newOwner)
 	}
-	log.Println(room.Owner, "New")
+	log.Println(room.Owner, "新房主", room.User)
 	UpdatePlayRoom(room)
 	room = GetRoom(room)
 	log.Println(len(room.User), "后来几个用户", "几个房间", len(PlayRoom))

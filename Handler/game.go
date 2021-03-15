@@ -277,6 +277,7 @@ func Leave(room Room, user string) {
 	if len(room.User) <= 1 {
 		for l, ro := range PlayRoom {
 			if ro.Owner == room.Owner {
+				log.Println("删除--------离开删除")
 				delete(PlayRoom, l)
 			}
 		}

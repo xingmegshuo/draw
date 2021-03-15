@@ -427,6 +427,10 @@ func UnReadyAll(room Room) {
 
 // 是否有人取消准备
 func IsStart(room Room) bool {
+	room = GetRoom(room)
+	if len(room.User) < 2 {
+		return false
+	}
 	for _, item := range room.User {
 		if item.Ready == "false" {
 			return false

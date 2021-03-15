@@ -660,6 +660,7 @@ func GameOver(room Room) {
 	}
 	UnderTime(5, room, "GameOverCountdown")
 	ServerRoom(room, StrToJSON("room", "房间状态", "{'message':'GameOverCountdownStop'}"))
+	UpdatePlayRoom((room))
 	// UnReadyAll(room)
 }
 

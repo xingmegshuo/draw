@@ -202,6 +202,7 @@ func RoomUser(room Room) {
 
 // 房间内信息
 func ServerRoom(room Room, mes string) {
+	room = GetRoom(room)
 	for _, item := range room.User {
 		if item.Status != "false" {
 			Send(item.Ws, mes)
@@ -545,14 +546,16 @@ func ChooseWordUnderTime(count int, room Room, mes string) bool {
 // 游戏流程
 func OneGame(room Room) {
 	for l, item := range room.User {
-		if item.Status == "false" {
-			continue
-		}
+		room = GetRoom(room)
+		// if item.Status == "false" {
+		// 	continue
+		// }
 		room.GuessPeople = len(room.User) - 1
 		room.Draw = item.OpenID
 		UpdatePlayRoom(room)
 		ServerRoom(room, StrToJSON("room", "画家", "{'message':'"+item.OpenID+"'}"))
 		ServerRoom(room, StrToJSON("system", "系统提示信息", "{'message':'房间公告: 第"+strconv.Itoa(l+1)+"回合,画师为"+item.OpenID+",请他开始选词'}"))
+		room = GetRoom(room)
 		w := ChooseWordUnderTime(10, room, "ChooseWordCountdown")
 		if w == false {
 			ServerRoom(room, StrToJSON("room", "房间状态", "{'message':'ChooseCountdownStop'}"))
@@ -562,6 +565,7 @@ func OneGame(room Room) {
 		time.Sleep(time.Second * 1)
 		ok := RoundTime(30, room)
 		if ok == true {
+			room = GetRoom(room)
 			ServerRoom(room, StrToJSON("room", "房间状态", "{'message':'DrawCountdownStop'}"))
 			room.GuessPeople = len(room.User) - 1
 			RoundOver(room)

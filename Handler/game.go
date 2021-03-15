@@ -291,7 +291,7 @@ func Leave(room Room, user string) {
 				delete(PlayRoom, l)
 			}
 		}
-		log.Println("删除--------离开删除", len(PlayRoom))
+		log.Println("删除--------离开删除", len(PlayRoom), "在线玩家状态", len(client_palyer), "在线用户", len(client_user))
 
 	} else {
 		log.Println(len(room.User), "之前几个用户", len(PlayRoom))

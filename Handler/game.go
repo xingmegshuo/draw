@@ -271,7 +271,11 @@ func Leave(room Room, user string) {
 	a := -1
 	if len(room.User) <= 1 {
 		for l, ro := range PlayRoom {
-			if ro.Owner == room.Owner {
+			if ro.ID == room.ID {
+				for _, item := range ro.User {
+					client_user[item.Ws] = client_palyer[item.Ws]
+					delete(client_palyer, item.Ws)
+				}
 				delete(PlayRoom, l)
 				log.Println("删除房间--------------------")
 			}

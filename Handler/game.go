@@ -354,7 +354,7 @@ func RoomSocket(mes []byte) {
 	case "leave":
 		go Leave(room, Msg.User)
 	case "start":
-		Start(room, Msg.User)
+		go Start(room, Msg.User)
 	case "word":
 		go Word(room, Msg.User)
 	case "choose":

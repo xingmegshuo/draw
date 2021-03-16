@@ -153,7 +153,6 @@ func Init(ws *websocket.Conn, room Room) string {
 	}
 	UpdatePlayRoom(room)
 	room = GetRoom(room)
-	log.Println("加入", client_palyer, client_user)
 	RoomUser(room)
 	return GetRoomID(room)
 }
@@ -591,7 +590,6 @@ func OneGame(room Room) {
 					ServerRoom(ro, StrToJSON("room", "房间状态", "{'message':'DrawCountdownStop'}"))
 					RoundOver(ro)
 				}
-
 			}
 			GameOver(ro)
 		}

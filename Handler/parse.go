@@ -137,5 +137,5 @@ func RemoveRoom(ws *websocket.Conn) {
 			}
 		}
 	}
-	delete(client_user, ws)
+	// delete(client_user, ws)
 }

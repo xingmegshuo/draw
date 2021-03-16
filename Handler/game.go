@@ -276,7 +276,7 @@ func Leave(room Room, user string) {
 	log.Println("退出房间----------------------")
 	for _, u := range room.User {
 		if u.OpenID == user {
-			client_user[u.Ws] = user
+			client_user[u.Ws] = client_palyer[u.Ws]
 			delete(client_palyer, u.Ws)
 			break
 		}
@@ -318,6 +318,7 @@ func Leave(room Room, user string) {
 			ServerRoom(room, StrToJSON("system", "系统消息", "{'message':'房间公告:"+user+"退出房间'}"))
 		}
 	}
+	log.Println("退出后几个房间---------", len(PlayRoom))
 }
 
 // 修改房主
@@ -349,7 +350,7 @@ func RoomSocket(mes []byte) {
 	case "send":
 		go ServerRoom(room, StrToJSON("room", "房间转发信息", "{'message':':"+Msg.Data+"'}"))
 	case "leave":
-		go Leave(room, Msg.User)
+		Leave(room, Msg.User)
 	case "start":
 		go Start(room, Msg.User)
 	case "word":

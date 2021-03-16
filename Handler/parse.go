@@ -114,9 +114,7 @@ func ParseData(con string, ws *websocket.Conn) {
 func CloseUser(ws *websocket.Conn) {
 	if len(client_palyer[ws]) > 0 {
 		// log.Println("断开链接的是谁", client_palyer[ws])
-		delete(client_user, ws)
-		delete(client_palyer, ws)
-		RemoveRoom()
+		RemoveRoom(ws)
 	}
 }
 
@@ -130,34 +128,15 @@ func Send(ws *websocket.Conn, mes string) {
 }
 
 // 移除房间的人
-func RemoveRoom() {
-	for i, ro := range PlayRoom {
-		if len(client_palyer) == 0 {
-			delete(PlayRoom, i)
-			// log.Println("删除房间")
-		} else {
-			IsUser(ro)
-			// log.Println("还有几个人", len(ro.User))
-			ro = GetRoom(ro)
-			if len(ro.User) > 1 {
-				RoomUser(ro)
+func RemoveRoom(ws *websocket.Conn) {
+	for _, ro := range PlayRoom {
+		for _, a := range ro.User {
+			if a.Ws == ws {
+				Leave(ro, a.OpenID)
+				log.Println("断线退出")
 			}
 		}
 	}
-}
-
-// 是否有无效用户
-func IsUser(room Room) {
-	for _, user := range room.User {
-		// log.Println(room.Status)
-		// if room.Status == true {
-		// log.Println("用户断开连接,退出房间", user.OpenID)
-		Leave(room, user.OpenID)
-		// } else {
-		// 	if _, ok := client_palyer[user.Ws]; !ok {
-		// 		log.Println("此用户断开链接,离线", user.OpenID)
-		// 		OutLine(user.Ws)
-		// 	}
-		// }
-	}
+	delete(client_user, ws)
+	delete(client_palyer, ws)
 }

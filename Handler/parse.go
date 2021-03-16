@@ -110,11 +110,11 @@ func ParseData(con string, ws *websocket.Conn) {
 	}
 }
 
-// 关闭连接时用户掉线
+// 关闭连接时
 func CloseUser(ws *websocket.Conn) {
 	if len(client_palyer[ws]) > 0 {
-		// log.Println("断开链接的是谁", client_palyer[ws])
 		RemoveRoom(ws)
+			// delete(client_user, ws)
 	}
 }
 
@@ -137,5 +137,4 @@ func RemoveRoom(ws *websocket.Conn) {
 			}
 		}
 	}
-	// delete(client_user, ws)
 }

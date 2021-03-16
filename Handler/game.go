@@ -205,9 +205,9 @@ func RoomUser(room Room) {
 // 房间内信息
 func ServerRoom(room Room, mes string) {
 	room = GetRoom(room)
-	log.Println(len(room.User), "发送消息几个人")
+	// log.Println(len(room.User), "发送消息几个人")
 	for _, item := range room.User {
-		log.Println(item.Status)
+		// log.Println(item.Status)
 		if item.Status != "false" {
 			Send(item.Ws, mes)
 		}
@@ -464,7 +464,7 @@ func IsStartUnderTime(count int, room Room, mes string) bool {
 		ServerRoom(room, StrToJSON("time", "系统时间提示", "{'message':'房间公告: 倒计时还有"+strconv.Itoa(count-i)+"秒'}"))
 		ServerRoom(room, StrToJSON("room", "倒计时", "{'message':'"+strconv.Itoa(count-i)+"'}"))
 		b := IsStart(room)
-		log.Println(b, "是否有人取消准备或退出")
+		// log.Println(b, "是否有人取消准备或退出")
 		if b == false {
 			// room = GetRoom(room)
 			ServerRoom(room, StrToJSON("room", "房间状态", "{'message':'StartCountdownStop'}"))
@@ -600,10 +600,7 @@ func OneGame(room Room) {
 				ok := RoundTime(30, ro)
 				if ok == true {
 					ServerRoom(ro, StrToJSON("room", "房间状态", "{'message':'DrawCountdownStop'}"))
-					room.GuessPeople = len(ro.User) - 1
 					RoundOver(ro)
-					room.Word = ""
-					UpdatePlayRoom(ro)
 				}
 
 			}
@@ -632,6 +629,9 @@ func RoundOver(room Room) {
 		item.Ok = ""
 		room.User[l] = item
 	}
+	room.Word = ""
+	room.GuessPeople = len(room.User) - 1
+	UpdatePlayRoom(room)
 	// log.Println("回合结束正确答案:", room.Word)
 	ServerRoom(room, StrToJSON("system", "系统提示信息", "{'message':'房间公告: 点赞开始'}"))
 	ServerRoom(room, StrToJSON("room", "房间状态", "{'message':'RoundOver'}"))

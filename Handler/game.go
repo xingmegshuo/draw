@@ -298,7 +298,7 @@ func Leave(room Room, user string) {
 			}
 			if room.Owner == user && len(room.User) > 1 {
 				change_owner = true
-				log.Println("房主退出房间----------------------")
+				// log.Println("房主退出房间----------------------")
 			}
 		}
 		if a != -1 {
@@ -501,6 +501,7 @@ func Start(room Room, user string) {
 
 // 随机生成四个词
 func Word(room Room, user string) {
+	log.Println("发送四个词语调用------------------")
 	str := "{'status':'room','mes':'词语','data':["
 	for i := 0; i < 3; i++ {
 		str = str + "'" + GetWord() + "',"

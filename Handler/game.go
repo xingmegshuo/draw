@@ -509,11 +509,7 @@ func Word(room Room, user string) {
 	str = strings.Replace(str, "'", "\"", -1)
 	room = GetRoom(room)
 	log.Println("发送四个词语--------", len(room.User), str)
-	for _, item := range room.User {
-		if item.OpenID == user && room.Draw == user {
-			Send(item.Ws, str)
-		}
-	}
+	ServerRoom(room, str)
 }
 
 // 从数据库中获取词语

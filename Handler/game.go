@@ -79,6 +79,7 @@ func GameStart(mes []byte, ws *websocket.Conn) string {
 		room = NewRoom()
 	}
 	message := Init(ws, room)
+	log.Println("几个房间现在", len(PlayRoom))
 	return StrToJSON("ok", "房间号", "{'message':'"+message+"'}")
 
 }
@@ -506,6 +507,8 @@ func Word(room Room, user string) {
 	}
 	str = str + "'" + GetWord() + "']}"
 	str = strings.Replace(str, "'", "\"", -1)
+	room = GetRoom(room)
+	log.Println("发送四个词语--------", len(room.User), str)
 	for _, item := range room.User {
 		if item.OpenID == user && room.Draw == user {
 			Send(item.Ws, str)

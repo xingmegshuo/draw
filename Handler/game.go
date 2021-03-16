@@ -352,7 +352,7 @@ func RoomSocket(mes []byte) {
 	case "send":
 		go ServerRoom(room, StrToJSON("room", "房间转发信息", "{'message':':"+Msg.Data+"'}"))
 	case "leave":
-		Leave(room, Msg.User)
+		go Leave(room, Msg.User)
 	case "start":
 		Start(room, Msg.User)
 	case "word":

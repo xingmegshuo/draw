@@ -461,6 +461,7 @@ func IsStartUnderTime(count int, room Room, mes string) bool {
 		ServerRoom(room, StrToJSON("time", "系统时间提示", "{'message':'房间公告: 倒计时还有"+strconv.Itoa(count-i)+"秒'}"))
 		ServerRoom(room, StrToJSON("room", "倒计时", "{'message':'"+strconv.Itoa(count-i)+"'}"))
 		b := IsStart(room)
+		log.Println(b, "是否有人取消准备或退出")
 		if b == false {
 			ServerRoom(room, StrToJSON("room", "房间状态", "{'message':'StartCountdownStop'}"))
 			ServerRoom(room, StrToJSON("room", "房间状态", "{'message':'GameError'}"))

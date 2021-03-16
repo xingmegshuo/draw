@@ -229,11 +229,6 @@ func UpdatePlayRoom(room Room) {
 			PlayRoom[l] = room
 			b = true
 		}
-		// if item.People == 6 || len(item.User) == 0 {
-		// 	log.Println("删除房间-----------")
-		// 	b = false
-		// 	delete(PlayRoom, l)
-		// }
 	}
 	if b == false {
 		PlayRoom[room.ID] = room

@@ -153,7 +153,7 @@ func Init(ws *websocket.Conn, room Room) string {
 	}
 	UpdatePlayRoom(room)
 	room = GetRoom(room)
-	log.Println("几个房间现在", len(PlayRoom), PlayRoom)
+	log.Println("房间现在", room)
 	RoomUser(room)
 	return GetRoomID(room)
 }
@@ -302,6 +302,7 @@ func Leave(room Room, user string) {
 		UpdatePlayRoom(room)
 		room = GetRoom(room)
 		RoomUser(room)
+		log.Println("退出", room)
 		ServerRoom(room, StrToJSON("system", "系统消息", "{'message':'房间公告:"+user+"退出房间'}"))
 	}
 }

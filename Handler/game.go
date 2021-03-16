@@ -508,10 +508,10 @@ func Word(room Room, user string) {
 	str = str + "'" + GetWord() + "']}"
 	str = strings.Replace(str, "'", "\"", -1)
 	room = GetRoom(room)
-	log.Println("发送四个词语调用------------------", len(room.User), room.Draw)
+	// log.Println("发送四个词语调用------------------", len(room.User), room.Draw)
 	for _, item := range room.User {
 		if item.OpenID == user && room.Draw == user {
-			log.Println("发送四个词语--------给谁发送", item.OpenID, str)
+			// log.Println("发送四个词语--------给谁发送", item.OpenID, str)
 			Send(item.Ws, str)
 		}
 	}

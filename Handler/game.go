@@ -139,21 +139,32 @@ func NewRoom() Room {
 // 初始化房间
 func Init(ws *websocket.Conn, room Room) string {
 	client_palyer[ws] = client_user[ws]
-	delete(client_user, ws)
+	// delete(client_user, ws)
 	player := Player{
 		OpenID: client_palyer[ws],
 		Ws:     ws,
 		Ready:  "true",
 		Status: "true",
 	}
-	room.User = append(room.User, player)
-	room.People = room.People - 1
+	add := true
+	for l, u := range room.User {
+		if u.OpenID == player.OpenID {
+			log.Println("房间存在此用户----------------------------")
+			room.User[l] = player
+			add = false
+		}
+	}
+	if add == true {
+		room.User = append(room.User, player)
+		room.People = room.People - 1
+	}
 	if room.People == 5 {
 		room.Owner = room.User[0].OpenID
 	}
 	UpdatePlayRoom(room)
 	room = GetRoom(room)
 	RoomUser(room)
+	log.Println("加入后:-----------", client_palyer)
 	return GetRoomID(room)
 }
 
@@ -222,7 +233,6 @@ func OutLine(ws *websocket.Conn) {
 
 // 更新房间到房间列表
 func UpdatePlayRoom(room Room) {
-	// log.Println(PlayRoom, "现在的房间列表")
 	b := false
 	for l, item := range PlayRoom {
 		if item.ID == room.ID {
@@ -233,7 +243,7 @@ func UpdatePlayRoom(room Room) {
 	if b == false {
 		PlayRoom[room.ID] = room
 	}
-
+	log.Println("几个房间----------", len(PlayRoom))
 }
 
 // 生成房间号
@@ -267,14 +277,14 @@ func Ready(room Room, user string, status string) {
 
 // 退出房间
 func Leave(room Room, user string) {
-	a := -1
+	for _, item := range room.User {
+		// client_user[item.Ws] = client_palyer[item.Ws]
+		delete(client_palyer, item.Ws)
+	}
 	if len(room.User) <= 1 {
 		for l, ro := range PlayRoom {
 			if ro.ID == room.ID {
-				for _, item := range ro.User {
-					client_user[item.Ws] = client_palyer[item.Ws]
-					delete(client_palyer, item.Ws)
-				}
+
 				delete(PlayRoom, l)
 				log.Println("删除房间--------------------")
 			}
@@ -282,33 +292,37 @@ func Leave(room Room, user string) {
 	} else {
 		log.Println("退出房间----------------------")
 		change_owner := false
-		for l, item := range room.User {
-			if item.OpenID == user {
-				client_user[item.Ws] = client_palyer[item.Ws]
-				delete(client_palyer, item.Ws)
-				a = l
-				room.People = room.People + 1
-				if room.Owner == user {
-					change_owner = true
+		for {
+			a := -1
+			for l, item := range room.User {
+				if item.OpenID == user {
+					a = l
+					room.People = room.People + 1
+					if room.Owner == user {
+						change_owner = true
+					}
 				}
 			}
-		}
-		if a != -1 {
-			room.User = append(room.User[:a], room.User[a+1:]...)
-		}
-		if change_owner == true {
-			oldOwner := room.Owner
-			room.Owner = room.User[0].OpenID
-			newOwner := room.Owner
-			changeOwner(oldOwner, newOwner)
+			if a != -1 {
+				room.User = append(room.User[:a], room.User[a+1:]...)
+			}
+			if a == -1 {
+				break
+			}
+			if change_owner == true {
+				oldOwner := room.Owner
+				room.Owner = room.User[0].OpenID
+				newOwner := room.Owner
+				changeOwner(oldOwner, newOwner)
+			}
 		}
 		room.People = 6 - len(room.User)
 		UpdatePlayRoom(room)
 		room = GetRoom(room)
 		RoomUser(room)
-		log.Println("退出", client_user)
 		ServerRoom(room, StrToJSON("system", "系统消息", "{'message':'房间公告:"+user+"退出房间'}"))
 	}
+	log.Println("退出后,在线用户:", client_user)
 }
 
 // 修改房主

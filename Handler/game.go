@@ -586,6 +586,7 @@ func OneGame(room Room) {
 				}
 				time.Sleep(time.Second * 1)
 				ok := RoundTime(30, ro)
+				ro = GetRoom(ro)
 				if ok == true {
 					ServerRoom(ro, StrToJSON("room", "房间状态", "{'message':'DrawCountdownStop'}"))
 					RoundOver(ro)
@@ -676,6 +677,9 @@ func RoundTime(count int, room Room) bool {
 		ServerRoom(room, StrToJSON("room", "倒计时", "{'message':'"+strconv.Itoa(count-i)+"'}"))
 		time.Sleep(time.Second * 1)
 		room = GetRoom(room)
+		if len(room.User) < 2 {
+			return true
+		}
 		if i == 0 {
 			ServerRoom(room, StrToJSON("room", "答案提示", "{'message':'答案提示: "+GetWordMess("first", room.Word)+"'}"))
 		}

@@ -354,7 +354,7 @@ func RoomSocket(mes []byte) {
 	case "leave":
 		Leave(room, Msg.User)
 	case "start":
-		go Start(room, Msg.User)
+		Start(room, Msg.User)
 	case "word":
 		go Word(room, Msg.User)
 	case "choose":
@@ -467,6 +467,7 @@ func IsStartUnderTime(count int, room Room, mes string) bool {
 		if b == false {
 			log.Println("发送开始游戏失败数据")
 			room = GetRoom(room)
+			log.Println(len(room.User))
 			ServerRoom(room, StrToJSON("room", "房间状态", "{'message':'StartCountdownStop'}"))
 			ServerRoom(room, StrToJSON("room", "房间状态", "{'message':'GameError'}"))
 			ServerRoom(room, StrToJSON("system", "系统提示信息", "{'message':'房间公告: 用户取消准备,游戏未能开始'}"))

@@ -501,7 +501,6 @@ func Start(room Room, user string) {
 
 // 随机生成四个词
 func Word(room Room, user string) {
-	log.Println("发送四个词语调用------------------")
 	str := "{'status':'room','mes':'词语','data':["
 	for i := 0; i < 3; i++ {
 		str = str + "'" + GetWord() + "',"
@@ -509,6 +508,7 @@ func Word(room Room, user string) {
 	str = str + "'" + GetWord() + "']}"
 	str = strings.Replace(str, "'", "\"", -1)
 	room = GetRoom(room)
+	log.Println("发送四个词语调用------------------", len(room.User), room.Draw)
 	for _, item := range room.User {
 		if item.OpenID == user && room.Draw == user {
 			log.Println("发送四个词语--------给谁发送", item.OpenID, str)
@@ -575,7 +575,7 @@ func OneGame(room Room) {
 		if ro.Owner == room.Owner {
 			for i, item := range ro.User {
 				ro.GuessPeople = len(ro.User) - 1
-				room.Draw = item.OpenID
+				ro.Draw = item.OpenID
 				UpdatePlayRoom(ro)
 				ServerRoom(ro, StrToJSON("room", "画家", "{'message':'"+item.OpenID+"'}"))
 				ServerRoom(ro, StrToJSON("system", "系统提示信息", "{'message':'房间公告: 第"+strconv.Itoa(i+1)+"回合,画师为"+item.OpenID+",请他开始选词'}"))

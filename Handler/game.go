@@ -204,10 +204,10 @@ func RoomUser(room Room) {
 // 房间内信息
 func ServerRoom(room Room, mes string) {
 	room = GetRoom(room)
+	log.Println(len(room.User), "发送消息几个人")
 	for _, item := range room.User {
 		log.Println(item.Status)
 		if item.Status != "false" {
-			log.Println("发送给", item.OpenID, mes)
 			Send(item.Ws, mes)
 		}
 	}
@@ -465,9 +465,7 @@ func IsStartUnderTime(count int, room Room, mes string) bool {
 		b := IsStart(room)
 		log.Println(b, "是否有人取消准备或退出")
 		if b == false {
-			log.Println("发送开始游戏失败数据")
 			// room = GetRoom(room)
-			log.Println(len(room.User))
 			ServerRoom(room, StrToJSON("room", "房间状态", "{'message':'StartCountdownStop'}"))
 			ServerRoom(room, StrToJSON("room", "房间状态", "{'message':'GameError'}"))
 			ServerRoom(room, StrToJSON("system", "系统提示信息", "{'message':'房间公告: 用户取消准备,游戏未能开始'}"))

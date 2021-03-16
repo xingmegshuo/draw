@@ -205,8 +205,9 @@ func RoomUser(room Room) {
 func ServerRoom(room Room, mes string) {
 	room = GetRoom(room)
 	for _, item := range room.User {
+		log.Println(item.Status)
 		if item.Status != "false" {
-			log.Println("发送给", item.OpenID)
+			log.Println("发送给", item.OpenID, mes)
 			Send(item.Ws, mes)
 		}
 	}

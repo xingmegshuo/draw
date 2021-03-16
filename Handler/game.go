@@ -120,10 +120,19 @@ func SearchRoom(roomID string) (Room, bool) {
 // 新建房间
 func NewRoom() Room {
 	log.Println("新建房间---------------------------")
+	Id := ""
+	for {
+		number := makeRoomID()
+		if _, ok := PlayRoom[number]; !ok {
+			Id = number
+			break
+		}
+	}
 	ro := Room{
 		People: 6,
 		Public: "true",
 		Status: true,
+		ID:     Id,
 	}
 	return ro
 }
@@ -231,26 +240,21 @@ func OutLine(ws *websocket.Conn) {
 
 // 更新房间到房间列表
 func UpdatePlayRoom(room Room) {
-	b := ""
 	for l, item := range PlayRoom {
 		if item.ID == room.ID {
 			PlayRoom[l] = room
-			b = "true"
 		}
 		if item.People == 6 || len(item.User) == 0 {
-			b = "true"
 			log.Println("删除房间-----------")
 			delete(PlayRoom, l)
 		}
 	}
-	if b == "" {
-		result, _ := rand.Int(rand.Reader, big.NewInt(int64(10000)))
-		number := strconv.Itoa(int(result.Int64()))
-		if _, ok := PlayRoom[number]; !ok {
-			room.ID = number
-			PlayRoom[number] = room
-		}
-	}
+}
+
+// 生成房间号
+func makeRoomID() string {
+	result, _ := rand.Int(rand.Reader, big.NewInt(int64(10000)))
+	return strconv.Itoa(int(result.Int64()))
 }
 
 // 用户准备

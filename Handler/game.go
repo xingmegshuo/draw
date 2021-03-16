@@ -153,7 +153,7 @@ func Init(ws *websocket.Conn, room Room) string {
 	}
 	UpdatePlayRoom(room)
 	room = GetRoom(room)
-	log.Println("房间现在", room)
+	log.Println("加入", client_palyer, client_user)
 	RoomUser(room)
 	return GetRoomID(room)
 }
@@ -223,7 +223,7 @@ func OutLine(ws *websocket.Conn) {
 
 // 更新房间到房间列表
 func UpdatePlayRoom(room Room) {
-	log.Println(PlayRoom, "现在的房间列表")
+	// log.Println(PlayRoom, "现在的房间列表")
 	b := false
 	for l, item := range PlayRoom {
 		if item.ID == room.ID {
@@ -303,7 +303,7 @@ func Leave(room Room, user string) {
 		UpdatePlayRoom(room)
 		room = GetRoom(room)
 		RoomUser(room)
-		log.Println("退出", room)
+		log.Println("退出", client_user)
 		ServerRoom(room, StrToJSON("system", "系统消息", "{'message':'房间公告:"+user+"退出房间'}"))
 	}
 }

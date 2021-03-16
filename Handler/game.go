@@ -345,23 +345,23 @@ func RoomSocket(mes []byte) {
 	}
 	switch Msg.Message {
 	case "ready":
-		Ready(room, Msg.User, Msg.Data)
+		go Ready(room, Msg.User, Msg.Data)
 	case "send":
-		ServerRoom(room, StrToJSON("room", "房间转发信息", "{'message':':"+Msg.Data+"'}"))
+		go ServerRoom(room, StrToJSON("room", "房间转发信息", "{'message':':"+Msg.Data+"'}"))
 	case "leave":
-		Leave(room, Msg.User)
+		go Leave(room, Msg.User)
 	case "start":
-		Start(room, Msg.User)
+		go Start(room, Msg.User)
 	case "word":
-		Word(room, Msg.User)
+		go Word(room, Msg.User)
 	case "choose":
 		// log.Println("选词----------------", room.Owner, Msg.Data)
 		str := strings.Replace(Msg.Data, "\"", "", -1)
-		Choose(room, str)
+		go Choose(room, str)
 	case "guess":
 		// log.Println("猜词---------------", room.Word)
 		str := strings.Replace(Msg.Data, "\"", "", -1)
-		Guess(room, Msg.User, str)
+		go Guess(room, Msg.User, str)
 	}
 }
 
@@ -509,7 +509,6 @@ func Word(room Room, user string) {
 	str = str + "'" + GetWord() + "']}"
 	str = strings.Replace(str, "'", "\"", -1)
 	room = GetRoom(room)
-
 	for _, item := range room.User {
 		if item.OpenID == user && room.Draw == user {
 			log.Println("发送四个词语--------给谁发送", item.OpenID, str)

@@ -278,8 +278,9 @@ func Ready(room Room, user string, status string) {
 // 退出房间
 func Leave(room Room, user string) {
 	for _, item := range room.User {
-		// client_user[item.Ws] = client_palyer[item.Ws]
-		delete(client_palyer, item.Ws)
+		if item.OpenID == user {
+			delete(client_palyer, item.Ws)
+		}
 	}
 	if len(room.User) <= 1 {
 		for l, ro := range PlayRoom {
@@ -320,7 +321,7 @@ func Leave(room Room, user string) {
 		RoomUser(room)
 		ServerRoom(room, StrToJSON("system", "系统消息", "{'message':'房间公告:"+user+"退出房间'}"))
 	}
-	log.Println("退出后,在线用户:", client_palyer)
+	log.Println("退出后:", client_palyer)
 }
 
 // 修改房主

@@ -39,6 +39,7 @@ type Room struct {
 	Draw        string
 	Status      bool
 	GuessPeople int
+	ID          string
 }
 
 type Mes struct {
@@ -245,6 +246,7 @@ func UpdatePlayRoom(room Room) {
 		result, _ := rand.Int(rand.Reader, big.NewInt(int64(10000)))
 		number := strconv.Itoa(int(result.Int64()))
 		if _, ok := PlayRoom[number]; !ok {
+			room.ID = number
 			PlayRoom[number] = room
 		}
 	}
@@ -544,7 +546,7 @@ func Choose(room Room, word string) {
 func GetRoom(room Room) Room {
 	var ro Room
 	for _, item := range PlayRoom {
-		if item.Owner == room.Owner {
+		if item.ID == room.ID {
 			ro = item
 		}
 	}

@@ -290,7 +290,6 @@ func Leave(room Room, user string) {
 				delete(PlayRoom, l)
 			}
 		}
-
 	} else {
 		change_owner := false
 		for l, item := range room.User {
@@ -320,7 +319,7 @@ func Leave(room Room, user string) {
 			ServerRoom(room, StrToJSON("system", "系统消息", "{'message':'房间公告:"+user+"退出房间'}"))
 		}
 	}
-	log.Println("退出后几个房间---------", len(PlayRoom))
+	log.Println("退出后几个房间---------", len(PlayRoom), "几个人----------", len(room.User))
 }
 
 // 修改房主

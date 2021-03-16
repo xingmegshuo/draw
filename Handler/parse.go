@@ -114,7 +114,11 @@ func ParseData(con string, ws *websocket.Conn) {
 func CloseUser(ws *websocket.Conn) {
 	if len(client_palyer[ws]) > 0 {
 		RemoveRoom(ws)
-			// delete(client_user, ws)
+		// delete(client_user, ws)
+	} else {
+		for k, _ := range PlayRoom {
+			delete(PlayRoom, k)
+		}
 	}
 }
 

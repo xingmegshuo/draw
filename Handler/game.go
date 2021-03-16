@@ -284,20 +284,17 @@ func Leave(room Room, user string) {
 	if len(room.User) <= 1 {
 		for l, ro := range PlayRoom {
 			if ro.ID == room.ID {
-
 				delete(PlayRoom, l)
 				log.Println("删除房间--------------------")
 			}
 		}
 	} else {
-		log.Println("退出房间----------------------")
 		change_owner := false
 		for {
 			a := -1
 			for l, item := range room.User {
 				if item.OpenID == user {
 					a = l
-					room.People = room.People + 1
 					if room.Owner == user {
 						change_owner = true
 					}
@@ -319,10 +316,11 @@ func Leave(room Room, user string) {
 		room.People = 6 - len(room.User)
 		UpdatePlayRoom(room)
 		room = GetRoom(room)
+		log.Println("退出房间----------------------房间人数", len(room.User))
 		RoomUser(room)
 		ServerRoom(room, StrToJSON("system", "系统消息", "{'message':'房间公告:"+user+"退出房间'}"))
 	}
-	log.Println("退出后,在线用户:", client_user)
+	log.Println("退出后,在线用户:", client_palyer)
 }
 
 // 修改房主

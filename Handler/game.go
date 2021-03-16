@@ -170,7 +170,7 @@ func Init(ws *websocket.Conn, room Room) string {
 	UpdatePlayRoom(room)
 	room = GetRoom(room)
 	// log.Println(room.Owner, "2")
-	log.Println(room, "加入的房间")
+	log.Println(room.Owner, "房主信息", "房间几个人----------", len(room.User))
 	RoomUser(room)
 	return GetRoomID(room)
 }
@@ -302,6 +302,7 @@ func Leave(room Room, user string) {
 		for l, ro := range PlayRoom {
 			if ro.Owner == room.Owner {
 				delete(PlayRoom, l)
+				log.Println("删除房间--------------------")
 			}
 		}
 	} else {
@@ -333,7 +334,6 @@ func Leave(room Room, user string) {
 			ServerRoom(room, StrToJSON("system", "系统消息", "{'message':'房间公告:"+user+"退出房间'}"))
 		}
 	}
-	log.Println("退出后几个房间---------", len(PlayRoom), "几个人----------", len(room.User))
 }
 
 // 修改房主

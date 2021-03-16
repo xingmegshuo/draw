@@ -80,7 +80,6 @@ func GameStart(mes []byte, ws *websocket.Conn) string {
 		room = NewRoom()
 	}
 	message := Init(ws, room)
-	log.Println("几个房间现在", len(PlayRoom))
 	return StrToJSON("ok", "房间号", "{'message':'"+message+"'}")
 
 }
@@ -169,6 +168,7 @@ func Init(ws *websocket.Conn, room Room) string {
 	// }
 	UpdatePlayRoom(room)
 	room = GetRoom(room)
+	log.Println("几个房间现在", len(PlayRoom), PlayRoom)
 	// log.Println(room.Owner, "2")
 	log.Println(room.Owner, "房主信息", "房间几个人----------", len(room.User))
 	RoomUser(room)

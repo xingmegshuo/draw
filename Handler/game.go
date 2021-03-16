@@ -223,6 +223,7 @@ func OutLine(ws *websocket.Conn) {
 
 // 更新房间到房间列表
 func UpdatePlayRoom(room Room) {
+	log.Println(PlayRoom, "现在的房间列表")
 	b := false
 	for l, item := range PlayRoom {
 		if item.ID == room.ID {

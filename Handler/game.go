@@ -161,6 +161,7 @@ func Init(ws *websocket.Conn, room Room) string {
 	UpdatePlayRoom(room)
 	room = GetRoom(room)
 	// log.Println(room.Owner, "2")
+	log.Println(room, "加入的房间")
 	RoomUser(room)
 	return GetRoomID(room)
 }
@@ -232,7 +233,7 @@ func OutLine(ws *websocket.Conn) {
 func UpdatePlayRoom(room Room) {
 	b := ""
 	for l, item := range PlayRoom {
-		if item.Owner == room.Owner {
+		if item.ID == room.ID {
 			PlayRoom[l] = room
 			b = "true"
 		}

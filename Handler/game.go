@@ -298,7 +298,7 @@ func Leave(room Room, user string) {
 			newOwner := room.Owner
 			changeOwner(oldOwner, newOwner)
 		}
-		room.People = room.People + 1
+		room.People = 6 - len(room.User)
 		UpdatePlayRoom(room)
 		room = GetRoom(room)
 		RoomUser(room)

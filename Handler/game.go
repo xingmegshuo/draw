@@ -243,7 +243,7 @@ func UpdatePlayRoom(room Room) {
 	if b == false {
 		PlayRoom[room.ID] = room
 	}
-	log.Println("几个房间----------", len(PlayRoom))
+	// log.Println("几个房间----------", len(PlayRoom))
 }
 
 // 生成房间号

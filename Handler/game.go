@@ -258,13 +258,13 @@ func Ready(room Room, user string, status string) {
 		if item.OpenID == user {
 			if status == "false" {
 				item.Ready = "false"
-				str := "{'status':'system','mes':'系统消息','data':{'message':'" + "房间公告:" + user + "取消准备'}}"
+				str := "{'status':'system','mes':'系统消息','data':{'message':'" + "房间公告:" + GetNickName(user) + "取消准备'}}"
 				str = strings.Replace(str, "'", "\"", -1)
 				ServerRoom(room, str)
 			}
 			if status == "true" {
 				item.Ready = "true"
-				str := "{'status':'system','mes':'系统消息','data':{'message':'" + "房间公告:" + user + "已经准备'}}"
+				str := "{'status':'system','mes':'系统消息','data':{'message':'" + "房间公告:" + GetNickName(user) + "已经准备'}}"
 				str = strings.Replace(str, "'", "\"", -1)
 				ServerRoom(room, str)
 			}
@@ -390,7 +390,7 @@ func Guess(room Room, user string, word string) {
 					item.Ok = "true"
 				} else {
 					if item.Ok != "true" {
-						a := "{'status':'system','mes':'答错了','data':{'message':'房间公告:" + item.OpenID + "回答错误','user':'" + item.OpenID + "'}}"
+						a := "{'status':'system','mes':'答错了','data':{'message':'房间公告:" + GetNickName(item.OpenID) + "回答错误','user':'" + item.OpenID + "'}}"
 						a = strings.Replace(a, "'", "\"", -1)
 						ServerRoom(room, a)
 					}
@@ -584,7 +584,8 @@ func OneGame(room Room) {
 				ro.Draw = item.OpenID
 				UpdatePlayRoom(ro)
 				ServerRoom(ro, StrToJSON("room", "画家", "{'message':'"+item.OpenID+"'}"))
-				ServerRoom(ro, StrToJSON("system", "系统提示信息", "{'message':'房间公告: 第"+strconv.Itoa(i+1)+"回合,画师为"+item.OpenID+",请他开始选词'}"))
+				ServerRoom(ro, StrToJSON("system", "系统提示信息", "{'message':'房间公告: 第"+strconv.Itoa(i+1)+"回合,画师为"+GetNickName(item.OpenID)+",请他开始选词'}"))
+				log.Println(ro.Word, "是否携带词语-------------------------")
 				w := ChooseWordUnderTime(10, ro, "ChooseWordCountdown")
 				ro = GetRoom(ro)
 				if len(ro.User) < 2 {
@@ -724,6 +725,19 @@ func GetWordMess(num string, word string) string {
 		case "third":
 			str = A.Third
 		}
+	}
+	return str
+}
+
+// 根据OpenID获取nickname
+func GetNickName(ID string) string {
+	user := Mydb.User{
+		OpenID: ID,
+	}
+	u, has := Userctrl.GetUser(user)
+	str := ""
+	if has {
+		str = u.NickName
 	}
 	return str
 }

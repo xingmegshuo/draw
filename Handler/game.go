@@ -580,6 +580,7 @@ func OneGame(room Room) {
 	for _, ro := range PlayRoom {
 		if ro.Owner == room.Owner {
 			for i, item := range ro.User {
+				ro = GetRoom(ro)
 				ro.GuessPeople = len(ro.User) - 1
 				ro.Draw = item.OpenID
 				UpdatePlayRoom(ro)

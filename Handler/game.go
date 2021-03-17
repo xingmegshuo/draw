@@ -731,12 +731,13 @@ func RoundTime(count int, room Room) bool {
 		}
 		if room.GuessPeople == 0 {
 			count = i + 3
+			room.GuessPeople = -1
+			UpdatePlayRoom(room)
 		}
-		if b != room.GuessPeople && room.GuessPeople != 0 {
+		if b != room.GuessPeople && room.GuessPeople != -1 {
 			count = count - 10
 			b = room.GuessPeople
 		}
-
 	}
 	return true
 }

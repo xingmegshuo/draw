@@ -385,7 +385,7 @@ func Guess(room Room, user string, word string) {
 		for l, item := range room.User {
 			if item.OpenID == user && room.Draw != user && room.GuessPeople > 0 {
 				if len(word) <= 12 {
-					if word == room.Word {
+					if word == room.Word && item.Ok != "true" {
 						item.Score = item.Score + room.GuessPeople*2
 						room.GuessPeople = room.GuessPeople - 1
 						add = true

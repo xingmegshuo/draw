@@ -357,6 +357,7 @@ func RoomSocket(mes []byte) {
 	case "start":
 		go Start(room, Msg.User)
 	case "word":
+
 		go Word(room, Msg.User)
 	case "choose":
 		// log.Println("选词----------------", room.Owner, Msg.Data)
@@ -536,7 +537,7 @@ func Word(room Room, user string) {
 	str = str + "]}"
 	str = strings.Replace(str, "'", "\"", -1)
 	room = GetRoom(room)
-	// log.Println("发送四个词语调用------------------", len(room.User), room.Draw)
+	log.Println("发送四个词语调用------------------,获取词语", len(room.User), room.Draw)
 	for _, item := range room.User {
 		if item.OpenID == user && room.Draw == user {
 			// log.Println("发送四个词语--------给谁发送", item.OpenID, str)
@@ -616,6 +617,7 @@ func OneGame(room Room) {
 					break
 				}
 				if w == false {
+					log.Println("选词结束------------", len(ro.User))
 					ServerRoom(ro, StrToJSON("room", "房间状态", "{'message':'ChooseCountdownStop'}"))
 					Choose(ro, GetWord())
 					ServerRoom(ro, StrToJSON("system", "系统提示信息", "{'message':'房间公告: 选词完毕'}"))

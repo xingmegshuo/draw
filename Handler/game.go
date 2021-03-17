@@ -527,13 +527,7 @@ func Word(room Room, user string) {
 			break
 		}
 	}
-	for l, w := range words {
-		if l < 4 {
-			str = str + "'" + w + "',"
-		} else {
-			str = str + "'" + w + "'"
-		}
-	}
+	str = str + "'" + words[1] + "'," + "'" + words[2] + "'," + "'" + words[3] + "'," + "'" + words[4] + "'"
 	str = str + "]}"
 	str = strings.Replace(str, "'", "\"", -1)
 	room = GetRoom(room)
@@ -588,6 +582,7 @@ func ChooseWordUnderTime(count int, room Room, mes string) bool {
 			return false
 		}
 		if ro.Word != "" {
+			log.Println("选词结束------------", len(ro.User))
 			ServerRoom(room, StrToJSON("room", "房间状态", "{'message':'ChooseCountdownStop'}"))
 			ServerRoom(room, StrToJSON("system", "系统提示信息", "{'message':'房间公告: 选词完毕'}"))
 			return true

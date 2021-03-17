@@ -508,10 +508,32 @@ func Start(room Room, user string) {
 // 随机生成四个词
 func Word(room Room, user string) {
 	str := "{'status':'room','mes':'词语','data':["
-	for i := 0; i < 3; i++ {
-		str = str + "'" + GetWord() + "',"
+	words := make(map[int]string)
+	a := 1
+	for {
+		w := GetWord()
+		b := false
+		for _, value := range words {
+			if w == value {
+				b = true
+			}
+		}
+		if b == false {
+			words[a] = w
+			a = a + 1
+		}
+		if len(words) == 4 {
+			break
+		}
 	}
-	str = str + "'" + GetWord() + "']}"
+	for l, w := range words {
+		if l < 4 {
+			str = str + "'" + w + "',"
+		} else {
+			str = str + "'" + w + "'"
+		}
+	}
+	str = str + "]}"
 	str = strings.Replace(str, "'", "\"", -1)
 	room = GetRoom(room)
 	// log.Println("发送四个词语调用------------------", len(room.User), room.Draw)
@@ -668,6 +690,7 @@ func GameOver(room Room) {
 	}
 	UnderTime(5, room, "GameOverCountdown")
 	ServerRoom(room, StrToJSON("room", "房间状态", "{'message':'GameOverCountdownStop'}"))
+	room.Word = ""
 	UpdatePlayRoom(room)
 	// UnReadyAll(room)
 }

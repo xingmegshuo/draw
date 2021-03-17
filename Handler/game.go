@@ -372,41 +372,47 @@ func RoomSocket(mes []byte) {
 
 // 猜词语
 func Guess(room Room, user string, word string) {
+	room = GetRoom(room)
 	str := ""
-	for _, i := range room.Word {
-		str = strings.Replace(word, string(i), "*", -1)
-	}
-	str = strings.Replace(word, room.Word, "**", -1)
-	add := false
-	for l, item := range room.User {
-		if item.OpenID == user && room.Draw != user && room.GuessPeople > 0 {
-			if len(word) <= 12 {
-				if word == room.Word {
-					item.Score = item.Score + room.GuessPeople*2
-					room.GuessPeople = room.GuessPeople - 1
-					add = true
-					a := "{'status':'room','mes':'答对加分','data':{'message':" + "[{'user':'" + user + "','score':'" + strconv.Itoa(item.Score) + "'}]" + "}}"
-					a = strings.Replace(a, "'", "\"", -1)
-					ServerRoom(room, a)
-					item.Ok = "true"
-				} else {
-					if item.Ok != "true" {
-						a := "{'status':'system','mes':'答错了','data':{'message':'房间公告:" + GetNickName(item.OpenID) + "回答错误','user':'" + item.OpenID + "'}}"
+	if room.Status == true {
+		str = word
+	} else {
+		for _, i := range room.Word {
+			str = strings.Replace(word, string(i), "*", -1)
+		}
+		str = strings.Replace(word, room.Word, "**", -1)
+		add := false
+		for l, item := range room.User {
+			if item.OpenID == user && room.Draw != user && room.GuessPeople > 0 {
+				if len(word) <= 12 {
+					if word == room.Word {
+						item.Score = item.Score + room.GuessPeople*2
+						room.GuessPeople = room.GuessPeople - 1
+						add = true
+						a := "{'status':'room','mes':'答对加分','data':{'message':" + "[{'user':'" + user + "','score':'" + strconv.Itoa(item.Score) + "'}]" + "}}"
 						a = strings.Replace(a, "'", "\"", -1)
 						ServerRoom(room, a)
+						item.Ok = "true"
+					} else {
+						if item.Ok != "true" {
+							a := "{'status':'system','mes':'答错了','data':{'message':'房间公告:" + GetNickName(item.OpenID) + "回答错误','user':'" + item.OpenID + "'}}"
+							a = strings.Replace(a, "'", "\"", -1)
+							ServerRoom(room, a)
+						}
 					}
 				}
-			}
 
+			}
+			room.User[l] = item
 		}
-		room.User[l] = item
-	}
-	for l, item := range room.User {
-		if item.OpenID == room.Draw && add == true {
-			item.Score = item.Score + 2
+		for l, item := range room.User {
+			if item.OpenID == room.Draw && add == true {
+				item.Score = item.Score + 2
+			}
+			room.User[l] = item
 		}
-		room.User[l] = item
 	}
+
 	data := "{'status':'system','mes':'猜答案和交流','data':{'message':'" + str + "','user':'" + user + "'}}"
 	data = strings.Replace(data, "'", "\"", -1)
 	UpdatePlayRoom(room)

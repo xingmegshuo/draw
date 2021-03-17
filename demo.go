@@ -1,10 +1,18 @@
 package main
 
 import (
-	"fmt"
+	"log"
+	"time"
 )
 
 func main() {
-	words := make(map[int]string)
-	fmt.Println(words[0])
+	a := 30
+	for i := 0; i < a; i++ {
+		time.Sleep(time.Second * 1)
+		log.Println(i)
+		if i == 20 {
+			a = 25
+		}
+	}
+
 }

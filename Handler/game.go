@@ -624,7 +624,7 @@ func OneGame(room Room) {
 					ServerRoom(ro, StrToJSON("system", "系统提示信息", "{'message':'房间公告: 选词完毕'}"))
 				}
 				time.Sleep(time.Second * 1)
-				ok := RoundTime(30, ro)
+				ok := RoundTime(90, ro)
 				ro = GetRoom(ro)
 				if ok == true {
 					ServerRoom(ro, StrToJSON("room", "房间状态", "{'message':'DrawCountdownStop'}"))
@@ -711,6 +711,7 @@ func UnderTime(count int, room Room, mes string) {
 // 回合倒计时
 func RoundTime(count int, room Room) bool {
 	ServerRoom(room, StrToJSON("room", "房间状态", "{'message':'DrawCountdown'}"))
+	b := len(room.User)
 	for i := 0; i < count; i++ {
 		ServerRoom(room, StrToJSON("time", "系统时间提示", "{'message':'房间公告: 倒计时还有"+strconv.Itoa(count-i)+"秒'}"))
 		ServerRoom(room, StrToJSON("room", "倒计时", "{'message':'"+strconv.Itoa(count-i)+"'}"))
@@ -722,14 +723,18 @@ func RoundTime(count int, room Room) bool {
 		if i == 0 {
 			ServerRoom(room, StrToJSON("room", "答案提示", "{'message':'答案提示: "+GetWordMess("first", room.Word)+"'}"))
 		}
-		if i == 10 {
+		if i == 30 {
 			ServerRoom(room, StrToJSON("room", "答案提示", "{'message':'答案提示: "+GetWordMess("second", room.Word)+"'}"))
 		}
-		if i == 20 {
+		if i == 60 {
 			ServerRoom(room, StrToJSON("room", "答案提示", "{'message':'答案提示: "+GetWordMess("third", room.Word)+"'}"))
 		}
 		if room.GuessPeople == 0 {
-			return true
+			count = i + 3
+		}
+		if b != room.GuessPeople && room.GuessPeople != 0 {
+			count = count - 10
+			b = room.GuessPeople
 		}
 
 	}

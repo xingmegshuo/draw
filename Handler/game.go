@@ -81,7 +81,6 @@ func GameStart(mes []byte, ws *websocket.Conn) string {
 	}
 	message := Init(ws, room)
 	return StrToJSON("ok", "房间号", "{'message':'"+message+"'}")
-
 }
 
 // 断线重连
@@ -113,7 +112,11 @@ func SearchRoom(roomID string) (Room, bool) {
 			}
 		}
 	}
-	return NewRoom(), false
+	if Game.Search == "true" {
+		return Room{}, false
+	} else {
+		return NewRoom(), false
+	}
 }
 
 // 新建房间
@@ -729,7 +732,7 @@ func RoundTime(count int, room Room) bool {
 		if i == 60 {
 			ServerRoom(room, StrToJSON("room", "答案提示", "{'message':'答案提示: "+GetWordMess("third", room.Word)+"'}"))
 		}
-		if room.GuessPeople == 0 {
+		if room.GuessPeople == 0 && i+3 < count {
 			count = i + 3
 			room.GuessPeople = -1
 			UpdatePlayRoom(room)

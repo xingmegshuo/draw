@@ -380,11 +380,11 @@ func Guess(room Room, user string, word string) {
 	if room.Status == true {
 		str = word
 	} else {
+		str = word
 		if len(room.Word) > 0 {
 			for _, i := range room.Word {
-				str = strings.Replace(word, string(i), "*", -1)
+				str = strings.Replace(str, string(i), "*", -1)
 			}
-			// str = strings.Replace(word, room.Word, "**", -1)
 		}
 		add := false
 		for l, item := range room.User {

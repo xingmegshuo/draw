@@ -2,17 +2,15 @@ package main
 
 import (
 	"log"
-	"time"
+	"strings"
 )
 
 func main() {
-	a := 30
-	for i := 0; i < a; i++ {
-		time.Sleep(time.Second * 1)
-		log.Println(i)
-		if i == 20 {
-			a = 25
-		}
+	b := "我要吃饺子"
+	c := "饺子"
+	for _, i := range c {
+		b = strings.Replace(b, string(i), "*", -1)
+		log.Println(i, b)
 	}
-
+	log.Println(b)
 }

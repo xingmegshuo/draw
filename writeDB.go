@@ -16,7 +16,7 @@ import (
 
 func main() {
 	ctrl := Mydb.NewGuessAnswerCtrl()
-	f, err := excelize.OpenFile("Thesaurus.xlsx")
+	f, err := excelize.OpenFile("thesaurus.xlsx")
 	if err != nil {
 		println(err.Error())
 		return

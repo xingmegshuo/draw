@@ -199,7 +199,7 @@ func RoomUser(room Room) {
 			if item.OpenID == room.Owner {
 				str = str + "{'user':'" + item.OpenID + "','nickName':'" + user.NickName + "','avatarUrl':'" + user.AvatarURL + "','orther':'" + user.Orther + "','ready':'" + item.Ready + "','homeowner':'" + item.OpenID + "','online':'" + item.Status + "'},"
 			} else {
-				str = str + "{'user':'" + item.OpenID + "','nickName':'" + user.NickName + "','avatarUrl':'" + user.AvatarURL + "','orther':'" + user.Orther + "','online':'" + item.Status + "'},"
+				str = str + "{'user':'" + item.OpenID + "','nickName':'" + user.NickName + "','avatarUrl':'" + user.AvatarURL + "','orther':'" + user.Orther + "','ready':'" + item.Ready + "','online':'" + item.Status + "'},"
 			}
 		}
 	}

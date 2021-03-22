@@ -3,7 +3,7 @@
 @Time        : 2020-12-15 17:21:05
 @Author      : small_ant
 @Email       : xms.chnb@gmail.com
-@Desc        : 狼人杀好友关系
+@Desc        : 好友关系
 **********************/
 
 package Mydb

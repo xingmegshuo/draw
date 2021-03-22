@@ -49,50 +49,45 @@ func ParseData(con string, ws *websocket.Conn) {
 		// log.Println("登录操作:")
 		mes := Login(info, ws)
 		Send(ws, mes)
-	case "upgrade":
-		// log.Println("账号升级")
+	case "like":
+		// log.Println("点赞")
 		mes := Upgrade(info)
 		Send(ws, mes)
-	// case "back":
-	// 	log.Println("获取背包")
-	// 	mes := GetBack(info)
+	case "clear":
+		mes := ClearData(info)
+		Send(ws, mes)
+	// case "record":
+	// 	// log.Println("获取最近战绩")
+	// 	mes := GetRecord(info)
 	// 	Send(ws, mes)
-	// case "addback":
-	// 	log.Println("购买商品，增加背包")
-	// 	mes := AddBack(info)
+	// case "recordRate":
+	// 	// log.Println("获取全部战斗")
+	// 	mes := GetRecordAll(info)
 	// 	Send(ws, mes)
-	case "record":
-		// log.Println("获取最近战绩")
-		mes := GetRecord(info)
-		Send(ws, mes)
-	case "recordRate":
-		// log.Println("获取全部战斗")
-		mes := GetRecordAll(info)
-		Send(ws, mes)
-	case "buddy":
-		// log.Println("获取好友列表")
-		mes := GetBuddy(info)
-		Send(ws, mes)
-	case "newbuddy":
-		// log.Println("获取好友申请")
-		mes := GetNewBuddy(info)
-		Send(ws, mes)
-	case "agreebuddy":
-		// log.Println("同意好友申请")
-		mes := AgreeBuddy(info)
-		Send(ws, mes)
-	case "rcombuddy":
-		// log.Println("获取好友推荐")
-		mes := RecomBuddy(info)
-		Send(ws, mes)
-	case "addbuddy":
-		// log.Println("添加好友申请")
-		mes := AddBuddy(info)
-		Send(ws, mes)
-	case "delbuddy":
-		// log.Println("删除好友")
-		mes := DeleteBuddy(info)
-		Send(ws, mes)
+	// case "buddy":
+	// 	// log.Println("获取好友列表")
+	// 	mes := GetBuddy(info)
+	// 	Send(ws, mes)
+	// case "newbuddy":
+	// 	// log.Println("获取好友申请")
+	// 	mes := GetNewBuddy(info)
+	// 	Send(ws, mes)
+	// case "agreebuddy":
+	// 	// log.Println("同意好友申请")
+	// 	mes := AgreeBuddy(info)
+	// 	Send(ws, mes)
+	// case "rcombuddy":
+	// 	// log.Println("获取好友推荐")
+	// 	mes := RecomBuddy(info)
+	// 	Send(ws, mes)
+	// case "addbuddy":
+	// 	// log.Println("添加好友申请")
+	// 	mes := AddBuddy(info)
+	// 	Send(ws, mes)
+	// case "delbuddy":
+	// 	// log.Println("删除好友")
+	// 	mes := DeleteBuddy(info)
+	// 	Send(ws, mes)
 	case "chat":
 		// log.Println("好友聊天")
 		mes := Chat(info)

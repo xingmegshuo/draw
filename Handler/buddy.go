@@ -9,13 +9,13 @@
 package Handler
 
 import (
+	"draw/Mydb"
 	"encoding/json"
 	"log"
 	"math/rand"
 	"strconv"
 	"strings"
 	"time"
-	"draw/Mydb"
 )
 
 // 用户好友
@@ -55,7 +55,7 @@ func GetNewBuddy(mes []byte) string {
 	thisUser, has := ctrlUser.GetUser(User)
 	if has {
 		back := Mydb.Buddy{
-			Buddys:  strconv.FormatInt(thisUser.Id, 10),
+			Buddys: strconv.FormatInt(thisUser.Id, 10),
 			Agree:  0,
 			Del:    0,
 		}
@@ -74,14 +74,14 @@ func AgreeBuddy(mes []byte) string {
 		log.Println("数据问题:", err.Error())
 		return ToMes("error", "同意好友失败,数据无法解析")
 	}
-	B,_ := ctrlBuddy.GetBuddy(buddy)
+	B, _ := ctrlBuddy.GetBuddy(buddy)
 	B.Agree = 1
 	ctrlBuddy.Update(B)
 	B, has := ctrlBuddy.GetBuddy(B)
 	if has {
-		UserId,_ :=  strconv.Atoi(B.Buddys)
+		UserId, _ := strconv.Atoi(B.Buddys)
 		Another := Mydb.Buddy{
-			User:  UserId,
+			User:   UserId,
 			Buddys: strconv.Itoa(B.User),
 			Agree:  1,
 		}
@@ -146,9 +146,9 @@ func RecomBuddy(mes []byte) string {
 			j := rand.Intn(len(users))
 			if users[j].Id != U.Id {
 				if i == l-1 {
-					str = str + "{'openID':'" + users[j].OpenID + "','nickName':'" + users[j].NickName + "','avatarUrl':'" + users[j].AvatarURL + "','level':'" + strconv.Itoa(users[j].Level) + "','id':'" + strconv.Itoa(int(users[j].Id)) + "'}"
+					str = str + "{'openID':'" + users[j].OpenID + "','nickName':'" + users[j].NickName + "','avatarUrl':'" + users[j].AvatarURL + "','id':'" + strconv.Itoa(int(users[j].Id)) + "'}"
 				} else {
-					str = str + "{'openID':'" + users[j].OpenID + "','nickName':'" + users[j].NickName + "','avatarUrl':'" + users[j].AvatarURL + "','level':'" + strconv.Itoa(users[j].Level) + "','id':'" + strconv.Itoa(int(users[j].Id)) + "'},"
+					str = str + "{'openID':'" + users[j].OpenID + "','nickName':'" + users[j].NickName + "','avatarUrl':'" + users[j].AvatarURL + "','id':'" + strconv.Itoa(int(users[j].Id)) + "'},"
 				}
 				break
 			} else {
@@ -212,9 +212,9 @@ func BuddyToString(status string, back []Mydb.Buddy, mes string, statu int) stri
 			itemId := strconv.FormatInt(item.Id, 10)
 			User, _ := ctrlUser.GetUser(user)
 			if l == len(back)-1 {
-				str = str + "{'openID':'" + User.OpenID + "','nickName':'" + User.NickName + "','avatarUrl':'" + User.AvatarURL + "','level':'" + strconv.Itoa(User.Level) + "','Id':'" + itemId + "'}"
+				str = str + "{'openID':'" + User.OpenID + "','nickName':'" + User.NickName + "','avatarUrl':'" + User.AvatarURL + "','Id':'" + itemId + "'}"
 			} else {
-				str = str + "{'openID':'" + User.OpenID + "','nickName':'" + User.NickName + "','avatarUrl':'" + User.AvatarURL + "','level':'" + strconv.Itoa(User.Level) + "','Id':'" + itemId + "'},"
+				str = str + "{'openID':'" + User.OpenID + "','nickName':'" + User.NickName + "','avatarUrl':'" + User.AvatarURL + "','Id':'" + itemId + "'},"
 			}
 		}
 

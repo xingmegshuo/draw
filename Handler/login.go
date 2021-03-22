@@ -55,8 +55,9 @@ func Login(mes []byte, ws *websocket.Conn) string {
 			client_user[ws] = U.OpenID
 			return mes
 		} else {
-			user.Level = 1
-			user.Money = 300
+			user.Score = 0
+			user.Like = 0
+			user.Number = 0
 			user.Id = 0
 			// log.Println(user)
 			ctrlUser.Insert(user)
@@ -74,7 +75,7 @@ func Login(mes []byte, ws *websocket.Conn) string {
 
 // 转换内容
 func UserToString(status string, user Mydb.User, mes string) string {
-	str := "{'status':'" + status + "','mes':'" + mes + "','data':{'openID':'" + user.OpenID + "','nickName':'" + user.NickName + "','avatarUrl':'" + user.AvatarURL + "','level':'" + strconv.Itoa(user.Level) + "','money':'" + strconv.Itoa(user.Money) + "','orther':'" + user.Orther + "','id':'" + strconv.Itoa(int(user.Id)) + "'}}"
+	str := "{'status':'" + status + "','mes':'" + mes + "','data':{'openID':'" + user.OpenID + "','nickName':'" + user.NickName + "','avatarUrl':'" + user.AvatarURL + "','Number':'" + strconv.Itoa(user.Number) + "','Score':'" + strconv.Itoa(user.Score) + "','like':'" + strconv.Itoa(user.Like) + "','orther':'" + user.Orther + "','id':'" + strconv.Itoa(int(user.Id)) + "'}}"
 	str = strings.Replace(str, "'", "\"", -1)
 	return str
 }

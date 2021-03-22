@@ -17,8 +17,9 @@ type User struct {
 	OpenID    string `xorm:"varchar(255)"`
 	NickName  string `xorm:"varchar(255)"`
 	AvatarURL string `xorm:"varchar(255)"`
-	Level     int    `xorm:default 0`
-	Money     int    `xorm:default 300`
+	Number    int    `xorm:default 0`
+	Score     int    `xorm:default 300`
+	Like      int
 	Orther    string `xorm:text`
 }
 

@@ -3,7 +3,7 @@
 @Time        : 2020-12-15 17:10:35
 @Author      : small_ant
 @Email       : xms.chnb@gmail.com
-@Desc        : 狼人杀个人背包数据库
+@Desc        : 个人背包数据库
 **********************/
 
 package Mydb

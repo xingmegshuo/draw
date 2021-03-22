@@ -14,14 +14,14 @@ import (
 	"log"
 )
 
-// 用户升级操作
+// 用户点赞操作
 func Upgrade(mes []byte) string {
 	// ctrlUser := Mydb.NewUserCtrl()
 	// var user Mydb.User
 	err := json.Unmarshal(mes, &user)
 	if err != nil {
 		log.Println("数据问题:", err.Error())
-		return ToMes("error", "升级失败,数据无法解析")
+		return ToMes("error", "点赞失败,数据无法解析")
 	}
 	User := Mydb.User{
 		OpenID: user.OpenID,
@@ -29,21 +29,33 @@ func Upgrade(mes []byte) string {
 	thisUser, has := ctrlUser.GetUser(User)
 	// log.Println(thisUser)
 	if has {
-		if user.Money != thisUser.Money && user.Money != 0 {
-			thisUser.Money = user.Money
-		} else {
-			thisUser.Level = thisUser.Level + 1
-		}
-		if len(user.NickName) > 0 {
-			thisUser.NickName = user.NickName
-		}
-		if len(user.AvatarURL) > 0 {
-			thisUser.AvatarURL = user.AvatarURL
-		}
-		num := ctrlUser.Update(thisUser)
-		log.Println(num)
+		thisUser.Like = thisUser.Like + 1
+		ctrlUser.Update(thisUser)
 	} else {
-		return ToMes("error", "升级失败，找不到用户")
+		return ToMes("error", "点赞失败，找不到用户")
 	}
-	return UserToString("ok", thisUser, "升级成功")
+	return UserToString("ok", thisUser, "点赞成功")
+}
+
+// 清空数据
+func ClearData(mes []byte) string {
+	err := json.Unmarshal(mes, &user)
+	if err != nil {
+		log.Println("数据问题:", err.Error())
+		return ToMes("error", "清空失败,数据无法解析")
+	}
+	User := Mydb.User{
+		OpenID: user.OpenID,
+	}
+	thisUser, has := ctrlUser.GetUser(User)
+	// log.Println(thisUser)
+	if has {
+		thisUser.Number = 0
+		thisUser.Score = 0
+		thisUser.Like = 0
+		ctrlUser.Update(thisUser)
+	} else {
+		return ToMes("error", "清空失败，找不到用户")
+	}
+	return UserToString("ok", thisUser, "清空成功")
 }

@@ -619,7 +619,7 @@ func OneGame(room Room) {
 				w := ChooseWordUnderTime(10, ro, "ChooseWordCountdown")
 				ro = GetRoom(ro)
 				if len(ro.User) < 2 {
-					GameOver(ro)
+					// GameOver(ro)
 					break
 				}
 				if w == false {
@@ -672,10 +672,26 @@ func RoundOver(room Room) {
 	ServerRoom(room, StrToJSON("system", "系统提示信息", "{'message':'房间公告: 点赞结束'}"))
 }
 
+// 写入数据
+func Settlement(room Room) {
+	for _, item := range room.User {
+		user := Mydb.User{
+			OpenID: item.OpenID,
+		}
+		thisUser, has := Userctrl.GetUser(user)
+		if has {
+			thisUser.Number = thisUser.Number + 1
+			thisUser.Score = thisUser.Score + item.Score
+			Userctrl.Update(thisUser)
+		}
+	}
+}
+
 // 游戏结束
 func GameOver(room Room) {
 	ServerRoom(room, StrToJSON("system", "系统提示信息", "{'message':'房间公告: 游戏结束'}"))
 	ServerRoom(room, StrToJSON("room", "房间状态", "{'message':'GameOver'}"))
+	Settlement(room)
 	str := "{'status':'room','mes':'游戏结算','data':["
 	for l, item := range room.User {
 		if l == len(room.User)-1 {

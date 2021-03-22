@@ -3,7 +3,7 @@
 @Time        : 2020-12-15 17:24:21
 @Author      : small_ant
 @Email       : xms.chnb@gmail.com
-@Desc        : 狼人杀战绩数据
+@Desc        : 你画我猜数据保存
 **********************/
 
 package Mydb

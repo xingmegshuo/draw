@@ -178,6 +178,7 @@ func GetRoomID(room Room) string {
 			return l
 		}
 	}
+	log.Println("no room --------------------------------------------")
 	return ""
 }
 
